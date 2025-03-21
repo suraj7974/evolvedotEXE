@@ -20,8 +20,11 @@ func process(delta):
 		player.play_animation("jump")  # Add jump animation
 
 	# Attack
-	if Input.is_action_just_pressed("attack"):
-		transitioned.emit("AttackState")  # Change to AttackState
+	if Input.is_action_just_pressed("attack1"):
+		transitioned.emit("AttackState", "attack1")  # Pass attack type
+	elif Input.is_action_just_pressed("attack2"):
+		transitioned.emit("AttackState", "attack2")  # Pass attack type
+
 
 func exit():
 	print("Exiting Idle State")

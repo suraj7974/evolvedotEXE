@@ -26,8 +26,11 @@ func update(delta):  # ✅ Fix: Add missing function
 	if current_state:
 		current_state.process(delta)
 
-func on_state_transition(new_state_name):
+func on_state_transition(new_state_name, attack_type = null):
 	if new_state_name in states:
 		current_state.exit()
 		current_state = states[new_state_name]
-		current_state.enter()
+		if attack_type:
+			current_state.enter(attack_type)  # Pass attack type to AttackState
+		else:
+			current_state.enter()
