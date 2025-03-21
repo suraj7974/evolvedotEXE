@@ -9,6 +9,7 @@ func _ready():
 
 	states["IdleState"] = $IdleState
 	states["RunState"] = $RunState
+	states["JumpState"] = $JumpState
 	states["AttackState"] = $AttackState
 
 	for state in states.values():

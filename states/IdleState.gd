@@ -20,7 +20,9 @@ func process(delta):
 		player.play_animation("jump")  # Add jump animation
 
 	if Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right"):
-		transitioned.emit("RunState")  # Switch to running state
+		transitioned.emit("RunState")
+	elif Input.is_action_just_pressed("jump") and player.is_on_floor():
+		transitioned.emit("JumpState")
 	elif Input.is_action_just_pressed("attack1"):
 		transitioned.emit("AttackState", "attack1")
 	elif Input.is_action_just_pressed("attack2"):

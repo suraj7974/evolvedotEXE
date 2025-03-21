@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://bt1gs6ao4pbrx"]
+[gd_scene load_steps=44 format=3 uid="uid://bt1gs6ao4pbrx"]
 
 [ext_resource type="Texture2D" uid="uid://djpldaajbm808" path="res://assets/sprites/Idle.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://bfevent0ya0ex" path="res://scripts/player.gd" id="1_g2els"]
@@ -8,7 +8,9 @@
 [ext_resource type="Script" uid="uid://bupnifwdgf1cq" path="res://states/IdleState.gd" id="4_qlg0r"]
 [ext_resource type="Script" uid="uid://dc7fo6q7smvaj" path="res://states/AttackState.gd" id="5_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://bqbjafpta13tj" path="res://assets/sprites/Run.png" id="5_smehm"]
+[ext_resource type="Texture2D" uid="uid://bhmiei5o8jglv" path="res://assets/sprites/Jump.png" id="5_y4r1p"]
 [ext_resource type="Script" uid="uid://ciyp0ft40ib6n" path="res://states/RunState.gd" id="9_ur7pv"]
+[ext_resource type="Script" uid="uid://b4xlvetlj2kmq" path="res://states/JumpState.gd" id="11_d2wvv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qlg0r"]
 atlas = ExtResource("2_tuyoq")
@@ -89,6 +91,14 @@ region = Rect2(1200, 0, 200, 200)
 [sub_resource type="AtlasTexture" id="AtlasTexture_fulsm"]
 atlas = ExtResource("1_3vyb7")
 region = Rect2(1400, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_487ah"]
+atlas = ExtResource("5_y4r1p")
+region = Rect2(0, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_md1ol"]
+atlas = ExtResource("5_y4r1p")
+region = Rect2(200, 0, 200, 200)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ke2ow"]
 atlas = ExtResource("5_smehm")
@@ -201,6 +211,17 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_487ah")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_md1ol")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_ke2ow")
 }, {
 "duration": 1.0,
@@ -240,9 +261,8 @@ sprite = NodePath("AnimatedSprite2D")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 rotation = -0.00446394
 sprite_frames = SubResource("SpriteFrames_d2wvv")
-animation = &"run"
+animation = &"jump"
 autoplay = "idle"
-frame_progress = 0.375258
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(2, -23)
@@ -259,3 +279,6 @@ script = ExtResource("5_qlg0r")
 
 [node name="RunState" type="Node" parent="StateMachine"]
 script = ExtResource("9_ur7pv")
+
+[node name="JumpState" type="Node" parent="StateMachine"]
+script = ExtResource("11_d2wvv")
