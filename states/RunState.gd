@@ -3,21 +3,16 @@ extends State
 func enter():
 	print("Entered Run State")
 	if player:
-		player.play_animation("run")
+		player.play_animation("run")  # Play run animation
 
 func process(delta):
-	# Move player left or right
-	var direction = 0
-	if Input.is_action_pressed("move_left"):
-		direction = -1
-	elif Input.is_action_pressed("move_right"):
-		direction = 1
-	
-	player.velocity.x = direction * player.SPEED  # Move the player
+	# Check if player is moving left or right
+	var moving = Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right")
 
-	# If no movement, go back to idle
-	if direction == 0:
-		transitioned.emit("IdleState")
+	if Input.is_action_just_pressed("jump") and player.is_on_floor():
+		transitioned.emit("JumpState")  # ✅ Switch to JumpState while running
+	elif not moving:
+		transitioned.emit("IdleState")  # Go back to IdleState if no movement
 
 func exit():
 	print("Exiting Run State")
