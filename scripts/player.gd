@@ -13,19 +13,18 @@ func _ready():
 
 func _physics_process(delta: float):
 	if not is_on_floor():
-		velocity.y += GRAVITY * delta
+		velocity.y += GRAVITY * delta  # Apply gravity
 
 	if state_machine:
 		state_machine.update(delta)
 
-	move_and_slide()
+	move_and_slide()  # ✅ Ensure movement applies!
+
 
 func play_animation(anim_name: String):
 	if sprite and sprite.sprite_frames:
 		if sprite.sprite_frames.has_animation(anim_name):
 			sprite.play(anim_name)
 			print("✅ Playing animation:", anim_name)
-		else:
-			print("❌ ERROR: Animation '" + anim_name + "' not found!")
 	else:
 		print("❌ ERROR: sprite or sprite_frames is missing!")
