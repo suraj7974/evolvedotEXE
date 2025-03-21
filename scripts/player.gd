@@ -16,9 +16,9 @@ func _physics_process(delta: float):
 		velocity.y += GRAVITY * delta  # Apply gravity
 
 	if state_machine:
-		state_machine.update(delta)
+		state_machine.update(delta)  # Update state machine
 
-	move_and_slide()  # ✅ Ensure movement applies!
+	move_and_slide()  # Apply movement
 
 
 func play_animation(anim_name: String):

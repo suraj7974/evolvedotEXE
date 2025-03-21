@@ -8,6 +8,7 @@ func _ready():
 	player = get_parent()  # ✅ Fix: Get reference to Player
 
 	states["IdleState"] = $IdleState
+	states["RunState"] = $RunState
 	states["AttackState"] = $AttackState
 
 	for state in states.values():
