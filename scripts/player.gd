@@ -13,18 +13,33 @@ func _ready():
 
 func _physics_process(delta: float):
 	if not is_on_floor():
-		velocity.y += GRAVITY * delta  # Apply gravity
+		velocity.y += GRAVITY * delta
+
+	# Handle movement
+	var direction = 0
+	if Input.is_action_pressed("move_left"):
+		direction = -1
+	elif Input.is_action_pressed("move_right"):
+		direction = 1
+
+	# Move the player
+	velocity.x = direction * SPEED
+
+	# ✅ Flip the sprite to face movement direction
+	if direction != 0:
+		sprite.flip_h = (direction == -1)  # Face left if moving left
 
 	if state_machine:
-		state_machine.update(delta)  # Update state machine
+		state_machine.update(delta)
 
-	move_and_slide()  # Apply movement
-
+	move_and_slide()
 
 func play_animation(anim_name: String):
 	if sprite and sprite.sprite_frames:
 		if sprite.sprite_frames.has_animation(anim_name):
 			sprite.play(anim_name)
 			print("✅ Playing animation:", anim_name)
+		else:
+			print("❌ ERROR: Animation '" + anim_name + "' not found!")
 	else:
 		print("❌ ERROR: sprite or sprite_frames is missing!")
