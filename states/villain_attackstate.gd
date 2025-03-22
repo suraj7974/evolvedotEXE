@@ -2,11 +2,15 @@ extends VillainState
 
 func enter():
 	print("🗡️ Villain entered Attack State")
-	villain.play_animation("attack")  
+	if villain.sprite:
+		villain.sprite.play("attack")
+	else:
+		print("❌ ERROR: AnimatedSprite2D is missing!")
+ 
 
 	# ✅ Wait for attack animation to finish before transitioning
-	await villain.animation_player.animation_finished
-	transitioned.emit("villian_idlestate")  
+	await villain.sprite.animation_finished
+	transitioned.emit("IdleState")  
 
 func _process(_delta):  
 	pass  # Can add attack logic if needed

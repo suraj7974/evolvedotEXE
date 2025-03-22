@@ -22,4 +22,5 @@ shape = SubResource("WorldBoundaryShape2D_uwrxv")
 position = Vector2(52, 50)
 
 [node name="villian" parent="." instance=ExtResource("2_yqjtg")]
-position = Vector2(247, 50)
+position = Vector2(262, 65)
+detection_range = 150.0

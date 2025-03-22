@@ -35,7 +35,10 @@ func update(delta):
 		current_state.update(delta)
 
 func on_state_transition(new_state_name):
+	print("🔄 Transitioning to:", new_state_name)  # ✅ Debugging output
 	if new_state_name in states:
 		current_state.exit()
 		current_state = states[new_state_name]
 		current_state.enter()
+	else:
+		print("❌ ERROR: Invalid state transition:", new_state_name)
