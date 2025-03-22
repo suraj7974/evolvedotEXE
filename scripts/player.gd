@@ -2,14 +2,27 @@ extends CharacterBody2D
 
 @export var state_machine: Node  # Expose StateMachine
 @export var sprite: AnimatedSprite2D  # Expose Sprite for animations
+@export var hp_bar: ProgressBar  # Player HP bar
 
+var health = 100
 const JUMP_VELOCITY = -400.0
 const SPEED = 300.0
 const GRAVITY = 980.0
 
 func _ready():
+	hp_bar.max_value = health
+	hp_bar.value = health
+	print("Player Y:", global_position.y)
 	if state_machine:
 		print("✅ State Machine Loaded Successfully!")
+	
+	
+func take_damage(amount):
+	health -= amount
+	hp_bar.value = health
+	if health <= 0:
+		print("💀 Player Died!")  # Handle player death
+
 
 func _physics_process(delta: float):
 	if not is_on_floor():

@@ -274,21 +274,19 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_d2wvv"]
 radius = 10.198
 
-[node name="player" type="CharacterBody2D" node_paths=PackedStringArray("state_machine", "sprite")]
+[node name="player" type="CharacterBody2D" node_paths=PackedStringArray("state_machine", "sprite", "hp_bar")]
 script = ExtResource("1_g2els")
 state_machine = NodePath("StateMachine")
 sprite = NodePath("AnimatedSprite2D")
+hp_bar = NodePath("ProgressBar")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-rotation = -0.00446394
 sprite_frames = SubResource("SpriteFrames_d2wvv")
-animation = &"attack2"
+animation = &"idle"
 autoplay = "idle"
-frame = 2
-frame_progress = 0.773667
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(2, -23)
+position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_d2wvv")
 
 [node name="StateMachine" type="Node" parent="."]
@@ -305,3 +303,7 @@ script = ExtResource("9_ur7pv")
 
 [node name="JumpState" type="Node" parent="StateMachine"]
 script = ExtResource("11_d2wvv")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_right = 4.0
+offset_bottom = 27.0
