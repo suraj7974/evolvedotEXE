@@ -14,6 +14,12 @@ var health = 100
 const GRAVITY = 980.0
 
 func _ready():
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() > 0:
+		player = players[0]  # Get the first player
+		print("✅ Player assigned successfully!")
+	else:
+		print("❌ ERROR: No player found in group 'player'!")
 	hp_bar.max_value = health
 	hp_bar.value = health
 	print("Villain Y:", global_position.y)
