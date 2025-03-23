@@ -7,10 +7,16 @@ func enter():
 	print("🛑 Villain Entered Idle State")
 	if villain and villain.sprite:
 		villain.sprite.play("idle")
+		
+		# Ensure villain is facing left when idle at the beginning
+		if villain.player:
+			# Face toward player's initial position
+			villain.sprite.flip_h = (villain.global_position.x > villain.player.global_position.x)
 	
 	# Reset velocity when entering idle
 	if villain:
 		villain.velocity = Vector2.ZERO
+		villain.move_and_slide()
 	
 	time_since_check = 0  # Reset detection timer
 

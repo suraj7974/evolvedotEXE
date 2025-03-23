@@ -33,10 +33,15 @@ func _physics_process(delta):
 			return
 		
 		# Only transition to attack if the cooldown is finished
+		# And ensure we're in the right distance range
 		if distance < villain.ATTACK_RANGE and attack_cooldown_timer <= 0:
 			print("⚔️ Attack range reached: ", distance)
+			# Don't damage here, only transition to attack state
 			transitioned.emit("AttackState")
 			return
+		elif distance < villain.ATTACK_RANGE:
+			# If in range but cooldown still active, don't approach further
+			villain.velocity.x = 0
 		else:
 			# Continue chasing
 			var direction = (villain.player.global_position - villain.global_position).normalized()

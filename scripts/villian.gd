@@ -24,6 +24,11 @@ func _ready():
 	if players.size() > 0:
 		player = players[0]  # Get the first player
 		print("✅ Player assigned successfully!")
+		
+		# Make villain face left (toward player) at start
+		if sprite:
+			sprite.flip_h = true
+			print("✅ Villain facing left toward player")
 	else:
 		print("❌ ERROR: No player found in group 'player'!")
 	hp_bar.max_value = health
