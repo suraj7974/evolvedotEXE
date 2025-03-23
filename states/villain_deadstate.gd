@@ -46,7 +46,9 @@ func respawn():
 		
 		# Reset health
 		villain.health = 100
-		villain.hp_bar.value = villain.health
+		
+		# Update the health bar using the custom method instead of directly setting hp_bar.value
+		villain.update_health_bar()
 		
 		# Reset death flag
 		villain.is_dead = false

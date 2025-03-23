@@ -17,5 +17,8 @@ func respawn():
 	print("🔄 Respawning Player")
 	player.global_position = Vector2(100, 300)  # Set respawn position
 	player.health = 100  # Restore HP
-	player.hp_bar.value = player.health  # Update the health bar
+	
+	# Update the health bar - use the custom update function
+	player.update_health_bar()
+	
 	player.state_machine.transition_to("IdleState")  # Go back to idle

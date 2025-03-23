@@ -3,7 +3,7 @@ extends CharacterBody2D
 @export var state_machine: Node  
 @export var sprite: AnimatedSprite2D  
 @export var player: CharacterBody2D  
-@export var hp_bar: ProgressBar  
+@export var hp_bar: ProgressBar  # Will be replaced with ColorRect
 @export var detection_area: Area2D  
 @export var detection_range: float = 150 
 
@@ -14,37 +14,60 @@ var health = 100
 const GRAVITY = 980.0
 var attack_cooldown = 0
 var can_attack = true
-var is_dead = false  # Add a flag to track death state
-var chase_persistence_range = 200.0  # Range before villain gives up chase
+var is_dead = false
+var chase_persistence_range = 200.0
+var health_bar_bg: ColorRect
+var health_bar_fill: ColorRect
 
 func _ready():
-	add_to_group("villain")  # Add villain to a group for player attacks
+	add_to_group("villain")
 	
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
-		player = players[0]  # Get the first player
-		print("✅ Player assigned successfully!")
-		
-		# Make villain face left (toward player) at start
+		player = players[0]
 		if sprite:
 			sprite.flip_h = true
-			print("✅ Villain facing left toward player")
 	else:
-		print("❌ ERROR: No player found in group 'player'!")
-	hp_bar.max_value = health
-	hp_bar.value = health
-
-	# Ensure the State Machine is loaded
-	state_machine = $StateMachine  
-	if state_machine:
-		print("✅ Villain State Machine Loaded Successfully!")
+		print("❌ ERROR: No player found!")
 	
-	# Make sure animations are not looped where they shouldn't be
+	# Create custom health bar using ColorRect
+	create_custom_health_bar()
+	
+	# Setup state machine and animations
+	state_machine = $StateMachine
 	if sprite and sprite.sprite_frames:
 		if sprite.sprite_frames.has_animation("dead"):
 			sprite.sprite_frames.set_animation_loop("dead", false)
 		if sprite.sprite_frames.has_animation("attack"):
 			sprite.sprite_frames.set_animation_loop("attack", false)
+
+func create_custom_health_bar():
+	# Remove existing hp_bar if any
+	if hp_bar and is_instance_valid(hp_bar):
+		hp_bar.queue_free()
+	
+	# Background bar (black/dark)
+	health_bar_bg = ColorRect.new()
+	health_bar_bg.color = Color(0.1, 0.1, 0.1, 0.6)
+	health_bar_bg.size = Vector2(32, 1) # 1 pixel height
+	health_bar_bg.position = Vector2(-16, -50)
+	add_child(health_bar_bg)
+	
+	# Health fill (red)
+	health_bar_fill = ColorRect.new()
+	health_bar_fill.color = Color(0.8, 0.1, 0.1, 0.8)
+	health_bar_fill.size = Vector2(32, 1) # 1 pixel height
+	health_bar_fill.position = Vector2(0, 0) # Relative to background
+	health_bar_bg.add_child(health_bar_fill)
+	
+	# Set initial health display
+	update_health_bar()
+
+func update_health_bar():
+	if health_bar_fill:
+		# Calculate width based on health percentage
+		var health_percent = float(health) / 100.0
+		health_bar_fill.size.x = 32 * health_percent
 
 func is_player_near() -> bool:
 	if player:
@@ -104,7 +127,7 @@ func take_damage(amount):
 
 	print("💥 Villain taking damage:", amount)
 	health -= amount
-	hp_bar.value = health
+	update_health_bar()  # Update custom health bar
 	
 	# Flash the sprite to indicate damage
 	if sprite:
@@ -114,9 +137,9 @@ func take_damage(amount):
 	
 	if health <= 0:
 		print("💀 Villain Died!")
-		is_dead = true  # Set the dead flag
-		health = 0     # Ensure health doesn't go below 0
-		hp_bar.value = 0
+		is_dead = true
+		health = 0
+		update_health_bar()  # Update health bar to empty
 		
 		# Disable ALL collisions to prevent further interactions
 		for child in get_children():
