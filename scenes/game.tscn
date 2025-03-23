@@ -23,4 +23,3 @@ position = Vector2(52, 50)
 
 [node name="villian" parent="." instance=ExtResource("2_yqjtg")]
 position = Vector2(262, 65)
-detection_range = 150.0

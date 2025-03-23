@@ -11,8 +11,8 @@ func enter():
 func exit():
 	pass
 
-func process(_delta):
+func _process(_delta):
 	pass
 
-func physics_process(_delta):
+func _physics_process(_delta):
 	pass

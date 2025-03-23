@@ -19,10 +19,12 @@ func _ready():
 	
 func take_damage(amount):
 	health -= amount
-	hp_bar.value = health
-	if health <= 0:
-		print("💀 Player Died!")  # Handle player death
+	hp_bar.value = health  # Update UI
+	print("💔 Player took damage! HP:", health)
 
+	if health <= 0:
+		print("☠️ Player Died!")
+		state_machine.transition_to("DeadState")  # State transition happens but animation issue remains
 
 func _physics_process(delta: float):
 	if not is_on_floor():

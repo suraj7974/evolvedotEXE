@@ -11,6 +11,7 @@ func _ready():
 	states["RunState"] = $RunState
 	states["JumpState"] = $JumpState
 	states["AttackState"] = $AttackState
+	states["DeadState"] = $DeadState
 
 	for state in states.values():
 		state.transitioned.connect(on_state_transition)  
@@ -19,6 +20,19 @@ func _ready():
 	current_state = states["IdleState"]  
 	if current_state:
 		current_state.enter()
+
+func transition_to(new_state_name, attack_type = null):
+	if new_state_name in states:
+		if current_state:
+			current_state.exit()
+		current_state = states[new_state_name]
+		if attack_type:
+			current_state.enter(attack_type)  # Pass attack type to AttackState
+		else:
+			current_state.enter()
+	else:
+		print("❌ ERROR: Invalid state transition:", new_state_name)
+
 
 func _process(delta):
 	if current_state:
