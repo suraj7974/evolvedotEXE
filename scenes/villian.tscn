@@ -233,7 +233,7 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_t1111"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_gy365"]
-radius = 71.1126
+radius = 14.3178
 
 [node name="villian" type="CharacterBody2D" node_paths=PackedStringArray("state_machine", "sprite", "player", "hp_bar", "detection_area")]
 script = ExtResource("1_gy365")

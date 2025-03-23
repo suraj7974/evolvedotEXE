@@ -15,6 +15,9 @@ func _ready():
 	# Create custom health bar using ColorRect
 	create_custom_health_bar()
 	
+	# Setup the camera to follow the player smoothly
+	setup_camera()
+	
 	print("Player Y:", global_position.y)
 	if state_machine:
 		print("✅ State Machine Loaded Successfully!")
@@ -63,6 +66,39 @@ func take_damage(amount):
 		print("☠️ Player Died!")
 		state_machine.transition_to("DeadState")
 
+func setup_camera():
+	# Check if camera exists, if not create one
+	var camera = $Camera2D if has_node("Camera2D") else null
+	
+	if not camera:
+		camera = Camera2D.new()
+		add_child(camera)
+		camera.name = "Camera2D"
+	
+	# Configure camera for smooth movement
+	camera.make_current()  # Make this the active camera
+	
+	# Set smoothing properties
+	camera.position_smoothing_enabled = true
+	camera.position_smoothing_speed = 7.0  # Higher value = more responsive, lower = smoother
+	
+	# Set rotation smoothing properties
+	camera.rotation_smoothing_enabled = true
+	camera.rotation_smoothing_speed = 7.0
+	
+	# Set zoom and limits if needed
+	camera.zoom = Vector2(1.0, 1.0)  # Default zoom level
+	
+	# Optional drag margin (makes camera move only when player approaches screen edge)
+	camera.drag_horizontal_enabled = true
+	camera.drag_vertical_enabled = true
+	camera.drag_left_margin = 0.1
+	camera.drag_right_margin = 0.1
+	camera.drag_top_margin = 0.1
+	camera.drag_bottom_margin = 0.1
+	
+	print("✅ Camera setup complete")
+
 func _physics_process(delta: float):
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
@@ -80,6 +116,11 @@ func _physics_process(delta: float):
 	# ✅ Flip the sprite to face movement direction
 	if direction != 0:
 		sprite.flip_h = (direction == -1)  # Face left if moving left
+		
+		# Optional: Slight camera offset in movement direction
+		var camera = get_node_or_null("Camera2D")
+		if camera:
+			camera.offset.x = lerp(camera.offset.x, direction * 50.0, delta * 2.0)
 
 	if state_machine:
 		state_machine.update(delta)
