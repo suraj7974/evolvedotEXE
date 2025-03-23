@@ -20,7 +20,7 @@ zoom = Vector2(2, 2)
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(164, 46)
+position = Vector2(60, 93)
 shape = SubResource("WorldBoundaryShape2D_uwrxv")
 
 [node name="player" parent="." instance=ExtResource("1_uwrxv")]
@@ -35,8 +35,8 @@ position = Vector2(160, 100)
 motion_mirroring = Vector2(1440, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/layer1"]
-position = Vector2(2.5, -98.5)
-scale = Vector2(0.996528, 1.54722)
+position = Vector2(-0.499984, -155)
+scale = Vector2(1.00069, 1.86111)
 texture = ExtResource("3_u5sy4")
 
 [node name="layer2" type="ParallaxLayer" parent="ParallaxBackground"]
@@ -62,8 +62,8 @@ position = Vector2(720, 0)
 motion_mirroring = Vector2(1440, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/layer1_copy"]
-position = Vector2(1.5, -97.5)
-scale = Vector2(0.997917, 1.54167)
+position = Vector2(1.5, -154)
+scale = Vector2(0.997917, 1.85556)
 texture = ExtResource("3_u5sy4")
 
 [node name="layer2_copy" type="ParallaxLayer" parent="ParallaxBackground"]
@@ -95,11 +95,15 @@ position = Vector2(0, 70)
 motion_mirroring = Vector2(1440, 0)
 
 [node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground2/layer1"]
+position = Vector2(0, 53.5)
+scale = Vector2(1, 1.20898)
 texture = ExtResource("7_kvpfn")
 
-[node name="layer2" type="ParallaxLayer" parent="ParallaxBackground2"]
+[node name="layer1_copy" type="ParallaxLayer" parent="ParallaxBackground2"]
 position = Vector2(720, 70)
 motion_mirroring = Vector2(1440, 0)
 
-[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground2/layer2"]
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground2/layer1_copy"]
+position = Vector2(0, 52.5)
+scale = Vector2(1, 1.20508)
 texture = ExtResource("7_kvpfn")
