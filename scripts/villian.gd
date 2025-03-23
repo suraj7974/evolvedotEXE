@@ -15,6 +15,7 @@ const GRAVITY = 980.0
 var attack_cooldown = 0
 var can_attack = true
 var is_dead = false  # Add a flag to track death state
+var chase_persistence_range = 200.0  # Range before villain gives up chase
 
 func _ready():
 	add_to_group("villain")  # Add villain to a group for player attacks
@@ -48,6 +49,12 @@ func is_player_near() -> bool:
 		else:
 			return false
 	return false
+
+func is_player_too_far() -> bool:
+	if player:
+		var distance = global_position.distance_to(player.global_position)
+		return distance > chase_persistence_range
+	return true
 
 func _physics_process(delta):
 	# Skip all processing if villain is dead
