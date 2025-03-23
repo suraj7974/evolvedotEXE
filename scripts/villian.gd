@@ -8,8 +8,8 @@ extends CharacterBody2D
 @export var detection_range: float = 150 
 
 const SPEED = 80.0
-const ATTACK_RANGE = 50.0  # Reduced attack range so player has a chance
-const DAMAGE = 5  # Reduced damage per hit to make it fairer
+const ATTACK_RANGE = 50.0  # Attack range
+const DAMAGE = 5  # Damage per hit
 var health = 100
 const GRAVITY = 980.0
 var attack_cooldown = 0
@@ -27,25 +27,26 @@ func _ready():
 		print("❌ ERROR: No player found in group 'player'!")
 	hp_bar.max_value = health
 	hp_bar.value = health
-	print("Villain Y:", global_position.y)
 
-	# ✅ Ensure the State Machine is loaded
+	# Ensure the State Machine is loaded
 	state_machine = $StateMachine  
 	if state_machine:
 		print("✅ Villain State Machine Loaded Successfully!")
+	
+	# Make sure animations are not looped where they shouldn't be
+	if sprite and sprite.sprite_frames:
+		if sprite.sprite_frames.has_animation("dead"):
+			sprite.sprite_frames.set_animation_loop("dead", false)
+		if sprite.sprite_frames.has_animation("attack"):
+			sprite.sprite_frames.set_animation_loop("attack", false)
 
 func is_player_near() -> bool:
 	if player:
 		var distance = global_position.distance_to(player.global_position)
-		print("🔍 Player Distance:", distance, "| Detection Range:", detection_range)
-
 		if distance < detection_range:
-			print("✅ Player is within detection range!")
 			return true
 		else:
-			print("🛑 Player is too far, villain should NOT follow!")
 			return false
-
 	return false
 
 func _physics_process(delta):
@@ -59,31 +60,30 @@ func _physics_process(delta):
 		if attack_cooldown <= 0:
 			can_attack = true
 	
-	# ✅ Apply Gravity
+	# Apply Gravity
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 	else:
 		velocity.y = 0  # Reset when on the floor
 
-	# ✅ STOP MOVEMENT IF IN IDLE STATE
-	if state_machine and state_machine.current_state.name == "villain_idlestate":
-		print("🛑 Force Stopping Movement in IdleState")
+	# STOP MOVEMENT IF IN IDLE STATE
+	if state_machine and state_machine.current_state and state_machine.current_state.name == "villain_idlestate":
 		velocity = Vector2.ZERO
 		move_and_slide()  # Apply zero velocity
-		return  # ⬅️ Exit function to stop processing further movement
+		return  # Exit function to stop processing further movement
 
-	# ✅ Ensure State Machine Updates
+	# Ensure State Machine Updates
 	if state_machine:
 		state_machine.update(delta)
 
-	# ✅ Debugging Output
-	print("Velocity:", velocity, "| Is On Floor:", is_on_floor())
-
-	move_and_slide()  # ✅ Ensure movement update
+	move_and_slide()  # Ensure movement update
 
 func play_animation(anim_name: String):
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(anim_name):
+		print("▶️ Playing villain animation: " + anim_name)
 		sprite.play(anim_name)
+	else:
+		print("❌ ERROR: Could not play animation '" + anim_name + "'!")
 	
 func take_damage(amount):
 	# Don't take damage if already dead
@@ -110,13 +110,10 @@ func take_damage(amount):
 		for child in get_children():
 			if child is CollisionShape2D:
 				child.set_deferred("disabled", true)
-				print("✓ Disabled collision shape: ", child.name)
-			
 			if child is Area2D:
 				for area_child in child.get_children():
 					if area_child is CollisionShape2D:
 						area_child.set_deferred("disabled", true)
-						print("✓ Disabled area collision shape: ", area_child.name)
 		
 		# Explicitly stop all movement
 		velocity = Vector2.ZERO
@@ -127,8 +124,7 @@ func take_damage(amount):
 		can_attack = false
 		
 		print("✓ Triggering dead state")
-		# Transition to dead state - use EXACT state name from villain_statemachine.gd
-		if state_machine and state_machine.has_method("on_state_transition"):
+		if state_machine:
 			state_machine.on_state_transition("DeadState")
 		else:
 			# Direct transition if method doesn't exist
