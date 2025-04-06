@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3 uid="uid://bt1gs6ao4pbrx"]
+[gd_scene load_steps=59 format=3 uid="uid://bt1gs6ao4pbrx"]
 
 [ext_resource type="Texture2D" uid="uid://djpldaajbm808" path="res://assets/sprites/Idle.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://bfevent0ya0ex" path="res://scripts/player.gd" id="1_g2els"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://dc7fo6q7smvaj" path="res://states/AttackState.gd" id="5_qlg0r"]
 [ext_resource type="Texture2D" uid="uid://bqbjafpta13tj" path="res://assets/sprites/Run.png" id="5_smehm"]
 [ext_resource type="Texture2D" uid="uid://bhmiei5o8jglv" path="res://assets/sprites/Jump.png" id="5_y4r1p"]
+[ext_resource type="Texture2D" uid="uid://blncle82vogdc" path="res://assets/sprites/Fireballs by Weentermakesgames/FireballPixelart/PixelartFireBall-1.png" id="6_f1ej7"]
 [ext_resource type="Script" uid="uid://ciyp0ft40ib6n" path="res://states/RunState.gd" id="9_ur7pv"]
 [ext_resource type="Script" uid="uid://b4xlvetlj2kmq" path="res://states/JumpState.gd" id="11_d2wvv"]
 [ext_resource type="Script" uid="uid://ccvwnt6p27rt0" path="res://states/DeadState.gd" id="13_jej6c"]
@@ -97,6 +98,18 @@ region = Rect2(800, 0, 200, 200)
 [sub_resource type="AtlasTexture" id="AtlasTexture_fdfoy"]
 atlas = ExtResource("4_3v2ag")
 region = Rect2(1000, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hhpqf"]
+atlas = ExtResource("1_3vyb7")
+region = Rect2(0, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g5jhy"]
+atlas = ExtResource("1_3vyb7")
+region = Rect2(200, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_holxr"]
+atlas = ExtResource("6_f1ej7")
+region = Rect2(0, 0, 74, 52)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_d2wvv"]
 atlas = ExtResource("1_3vyb7")
@@ -252,6 +265,20 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_hhpqf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g5jhy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_holxr")
+}],
+"loop": true,
+"name": &"fireball",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_d2wvv")
 }, {
 "duration": 1.0,
@@ -331,10 +358,8 @@ hp_bar = NodePath("ProgressBar")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_d2wvv")
-animation = &"dead"
+animation = &"fireball"
 autoplay = "idle"
-frame = 5
-frame_progress = 0.18394
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, -2)
