@@ -53,6 +53,10 @@ func respawn():
 		# Reset death flag
 		villain.is_dead = false
 		
+		 # Reset learning system - villain "forgets" previous attack patterns
+		if villain.has_method("reset_learning"):
+			villain.reset_learning()
+		
 		# Re-enable collisions
 		if villain.has_node("CollisionShape2D"):
 			villain.get_node("CollisionShape2D").set_deferred("disabled", false)

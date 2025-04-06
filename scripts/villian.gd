@@ -8,6 +8,7 @@ extends CharacterBody2D
 @export var detection_range: float = 150 
 @export var ground_y_position: float = 300  # Default ground position
 @export var y_offset: float = -70  # Y offset to align villain with ground - adjust this value as needed
+@export var enable_learning: bool = true  # Enable/disable reinforcement learning
 
 const SPEED = 80.0
 const ATTACK_RANGE = 50.0  # Attack range
@@ -20,11 +21,17 @@ var is_dead = false
 var chase_persistence_range = 200.0
 var health_bar_bg: ColorRect
 var health_bar_fill: ColorRect
+var attack_learner: AttackPatternLearner  # Reference to our reinforcement learning system
 
 func _ready():
 	add_to_group("villain")
 	
 	print("👹 Villain initial position before adjustment: Y=", global_position.y)
+	
+	# Initialize attack pattern learning system
+	if enable_learning:
+		attack_learner = AttackPatternLearner.new()
+		print("🧠 Attack pattern learning system initialized")
 	
 	# Immediately adjust position at startup
 	adjust_villain_position()
@@ -155,13 +162,34 @@ func play_animation(anim_name: String):
 	else:
 		print("❌ ERROR: Could not play animation '" + anim_name + "'!")
 	
-func take_damage(amount):
+func take_damage(amount, attack_type: String = "attack1"):
 	# Don't take damage if already dead
 	if is_dead:
 		return
 
-	print("💥 Villain taking damage:", amount)
-	health -= amount
+	# Calculate actual damage after applying learning-based resistance
+	var actual_damage = amount
+	if enable_learning and attack_learner:
+		# Register this attack for learning
+		attack_learner.register_attack(attack_type)
+		
+		# Apply resistance to reduce damage from repetitive attacks
+		var resistance = attack_learner.get_resistance(attack_type)
+		actual_damage = amount * (1.0 - resistance)
+		
+		# Show feedback when resistance is in effect
+		if resistance > 0.2:  # Only show if resistance is significant
+			print("🛡️ Villain resisted " + str(int(resistance * 100)) + "% of " + attack_type + " damage!")
+			
+			# Visual feedback for resistance
+			if sprite:
+				sprite.modulate = Color(0.7, 0.7, 1.0)  # Blue tint for resistance
+				await get_tree().create_timer(0.1).timeout
+				sprite.modulate = Color(1, 1, 1)  # Reset to normal
+	
+	# Apply the (potentially reduced) damage
+	print("💥 Villain taking damage:", actual_damage, " (original: ", amount, ")")
+	health -= actual_damage
 	update_health_bar()  # Update custom health bar
 	
 	# Flash the sprite to indicate damage
@@ -170,6 +198,7 @@ func take_damage(amount):
 		await get_tree().create_timer(0.1).timeout
 		sprite.modulate = Color(1, 1, 1)  # Reset to normal
 	
+	# Check for death
 	if health <= 0:
 		print("💀 Villain Died!")
 		is_dead = true
@@ -200,3 +229,9 @@ func take_damage(amount):
 			# Direct transition if method doesn't exist
 			print("❌ on_state_transition method not found, trying direct state change")
 			play_animation("dead")
+
+# Reset the villain's learning when respawning
+func reset_learning():
+	if enable_learning and attack_learner:
+		attack_learner.reset_learning()
+		print("🧠 Villain's attack pattern memory has been reset")

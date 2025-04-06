@@ -28,9 +28,10 @@ func enter(new_attack_type = "attack1"):
 				var is_in_front = (villain.global_position.x > player.global_position.x and not player.sprite.flip_h) or \
 								  (villain.global_position.x < player.global_position.x and player.sprite.flip_h)
 				if distance < 50 and is_in_front:
-					print("⚔️ Player hit villain!")
+					print("⚔️ Player hit villain with " + attack_type + "!")
 					if villain.has_method("take_damage"):
-						villain.take_damage(damage)
+						# Pass the attack type to the villain's take_damage method for learning
+						villain.take_damage(damage, attack_type)
 		else:
 			print("❌ ERROR: Animation not found for", attack_type)
 

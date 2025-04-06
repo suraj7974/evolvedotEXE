@@ -358,7 +358,7 @@ hp_bar = NodePath("ProgressBar")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_d2wvv")
-animation = &"fireball"
+animation = &"attack2"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
