@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://hfolmds33af1"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_0w482"]
+
+[resource]
+script = ExtResource("1_0w482")
+question_info = "What is the purpose of the 'with' statement in Python?"
+type = 0
+options = Array[String](["To define a new function", "To create a loop", "To ensure proper acquisition and release of resources", "To import modules conditionally"])
+correct = "To ensure proper acquisition and release of resources"
+difficulty = 3
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

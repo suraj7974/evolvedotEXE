@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://bymmsvjk7mlty"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_7lfm0"]
+
+[resource]
+script = ExtResource("1_7lfm0")
+question_info = "What is a context manager in Python?"
+type = 0
+options = Array[String](["A tool to manage global and local contexts in functions", "An object that defines the methods __enter__ and __exit__ for resource management", "A feature that manages different execution contexts", "A tool to manage memory contexts for large datasets"])
+correct = "An object that defines the methods __enter__ and __exit__ for resource management"
+difficulty = 3
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

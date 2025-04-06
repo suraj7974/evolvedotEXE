@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://bng71drfoyg13"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_v61sf"]
+
+[resource]
+script = ExtResource("1_v61sf")
+question_info = "What are metaclasses in Python?"
+type = 0
+options = Array[String](["Classes that inherit from multiple parent classes", "Classes with only class methods", "Classes that create classes", "Classes that cannot be instantiated"])
+correct = "Classes that create classes"
+difficulty = 4
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://gunog81qmtj8"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_7r56h"]
+
+[resource]
+script = ExtResource("1_7r56h")
+question_info = "What is the difference between a deep copy and a shallow copy in Python?"
+type = 0
+options = Array[String](["Deep copy creates a new object, while shallow copy creates a reference", "Shallow copy creates a new object with references to the original objects, while deep copy creates a new object with copies of the original objects", "There is no difference", "Deep copy works only for lists, while shallow copy works for dictionaries"])
+correct = "Shallow copy creates a new object with references to the original objects, while deep copy creates a new object with copies of the original objects"
+difficulty = 3
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

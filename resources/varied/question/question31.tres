@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://30scjdk0s3br"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_q1kgd"]
+
+[resource]
+script = ExtResource("1_q1kgd")
+question_info = "What is method overriding in Python?"
+type = 0
+options = Array[String](["Creating multiple methods with the same name but different parameters", "Redefining a method in a subclass that was already defined in the parent class", "Using the same variable name in different scopes", "Calling multiple methods at once"])
+correct = "Redefining a method in a subclass that was already defined in the parent class"
+difficulty = 4
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

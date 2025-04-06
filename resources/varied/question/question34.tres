@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://mbpl8xs62kgj"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_48i7k"]
+
+[resource]
+script = ExtResource("1_48i7k")
+question_info = "What is the Global Interpreter Lock (GIL) in Python?"
+type = 0
+options = Array[String](["A security feature that prevents unauthorized code execution", "A mutex that prevents multiple native threads from executing Python bytecode simultaneously", "A tool that locks global variables to prevent modification", "A system that interprets Python code globally across different platforms"])
+correct = "A mutex that prevents multiple native threads from executing Python bytecode simultaneously"
+difficulty = 4
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

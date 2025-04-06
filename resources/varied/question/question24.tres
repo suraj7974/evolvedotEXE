@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://cbbuo27uges22"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_ufu2s"]
+
+[resource]
+script = ExtResource("1_ufu2s")
+question_info = "What is the purpose of the '__call__' method in a Python class?"
+type = 0
+options = Array[String](["To call other methods within the class", "To make instances of the class callable like functions", "To initialize a new instance of the class", "To perform cleanup when an instance is deleted"])
+correct = "To make instances of the class callable like functions"
+difficulty = 3
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

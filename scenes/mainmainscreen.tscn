@@ -1,0 +1,74 @@
+[gd_scene load_steps=5 format=3 uid="uid://c1aed33w5dxbs"]
+
+[ext_resource type="Script" uid="uid://b8cdtd15xxuvp" path="res://scripts/mainmainscreen.gd" id="1_rsemk"]
+[ext_resource type="Texture2D" uid="uid://daltcc0jupm68" path="res://assets/background/background.png" id="2_ch8y3"]
+[ext_resource type="Texture2D" uid="uid://bteagibkx3ynt" path="res://assets/background/bg2.png" id="3_j6wn8"]
+[ext_resource type="Texture2D" uid="uid://dcke7lpj4j2sy" path="res://assets/pyquiz.png" id="4_da5re"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rsemk")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 647.0
+grow_horizontal = 2
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(63, 378)
+scale = Vector2(1.15735, 1.13389)
+texture = ExtResource("2_ch8y3")
+
+[node name="Bg2" type="Sprite2D" parent="."]
+position = Vector2(510, -540)
+scale = Vector2(0.835503, 1)
+texture = ExtResource("3_j6wn8")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 1154.0
+offset_bottom = 119.0
+theme_override_colors/font_color = Color(0, 0.933333, 0.760784, 1)
+theme_override_font_sizes/font_size = 70
+text = "Select Game"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Pyquiz" type="Sprite2D" parent="."]
+position = Vector2(854.25, 377.75)
+scale = Vector2(1.16895, 1.05566)
+texture = ExtResource("4_da5re")
+
+[node name="evolvedotexe" type="Button" parent="."]
+layout_mode = 0
+offset_top = 106.0
+offset_right = 554.0
+offset_bottom = 648.0
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 464.0
+offset_right = 498.0
+offset_bottom = 560.0
+theme_override_font_sizes/font_size = 70
+text = "Evolvedotexe"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Python_quiz" type="Button" parent="."]
+layout_mode = 0
+offset_left = 558.0
+offset_top = 106.0
+offset_right = 1158.0
+offset_bottom = 650.0
+
+[connection signal="pressed" from="evolvedotexe" to="." method="_on_evolvedotexe_pressed"]
+[connection signal="pressed" from="Python_quiz" to="." method="_on_python_quiz_pressed"]

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://bkc1cskxf227s"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_a1lrn"]
+
+[resource]
+script = ExtResource("1_a1lrn")
+question_info = "What is the purpose of the __init__ method in a Python class?"
+type = 0
+options = Array[String](["To initialize class variables", "To initialize an object when it is created", "To import required modules", "To define class methods"])
+correct = "To initialize an object when it is created"
+difficulty = 3
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

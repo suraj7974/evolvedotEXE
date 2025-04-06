@@ -1,0 +1,50 @@
+[gd_scene load_steps=4 format=3 uid="uid://gkw4fgba70bj"]
+
+[ext_resource type="Texture2D" uid="uid://dd5h6v6sbly2l" path="res://assets/python_quiz.jpg" id="1_7mc51"]
+[ext_resource type="Script" uid="uid://7nmov24fnj2l" path="res://scripts/pymainmenu.gd" id="1_t56ff"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t56ff"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_t56ff")
+
+[node name="PythonQuiz" type="Sprite2D" parent="."]
+position = Vector2(538, 376)
+scale = Vector2(1.76, 1.85627)
+texture = ExtResource("1_7mc51")
+
+[node name="start" type="Button" parent="."]
+layout_mode = 0
+offset_left = 229.0
+offset_top = 495.0
+offset_right = 528.0
+offset_bottom = 592.0
+theme_override_colors/font_color = Color(0, 0, 0.819608, 1)
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_t56ff")
+text = "Start"
+
+[node name="start2" type="Button" parent="."]
+layout_mode = 0
+offset_left = 590.0
+offset_top = 495.0
+offset_right = 889.0
+offset_bottom = 592.0
+theme_override_colors/font_color = Color(0, 0, 0.819608, 1)
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_t56ff")
+text = "Exit"
+
+[connection signal="pressed" from="start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="start2" to="." method="_on_start_2_pressed"]

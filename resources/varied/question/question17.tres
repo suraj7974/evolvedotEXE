@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://jn32rel18g8x"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_ubxci"]
+
+[resource]
+script = ExtResource("1_ubxci")
+question_info = "What is list comprehension in Python?"
+type = 0
+options = Array[String](["A function to analyze lists", "A concise way to create lists based on existing lists", "A method to compress list data", "A way to sort lists in descending order"])
+correct = "A concise way to create lists based on existing lists"
+difficulty = 3
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

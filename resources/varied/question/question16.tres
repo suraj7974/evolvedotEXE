@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="QuizQuestion" load_steps=2 format=3 uid="uid://bkwui30xg8kn8"]
+
+[ext_resource type="Script" uid="uid://d0gt0u0o7y4ep" path="res://scripts/resources/question.gd" id="1_cnmg3"]
+
+[resource]
+script = ExtResource("1_cnmg3")
+question_info = "What is the purpose of the continue statement in Python loops?"
+type = 0
+options = Array[String](["To skip the current iteration and continue with the next one", "To exit the loop completely", "To pause the loop execution temporarily", "To continue executing the code outside the loop"])
+correct = "To skip the current iteration and continue with the next one"
+difficulty = 2
+metadata/_custom_type_script = "uid://d0gt0u0o7y4ep"

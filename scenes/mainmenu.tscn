@@ -1,0 +1,65 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1rhyo2jynwgw"]
+
+[ext_resource type="Script" uid="uid://csvn4pa5ddmfs" path="res://scripts/mainmenu.gd" id="1_r3g3c"]
+[ext_resource type="Texture2D" uid="uid://daltcc0jupm68" path="res://assets/background/background.png" id="2_natt5"]
+
+[node name="mainmenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r3g3c")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(576, 313.5)
+scale = Vector2(1.35529, 1.39958)
+
+[node name="Background2" type="Sprite2D" parent="Background"]
+position = Vector2(-0.36894, -1.07172)
+scale = Vector2(0.999135, 1.00449)
+texture = ExtResource("2_natt5")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_left = 646.0
+offset_top = 272.0
+offset_right = 1077.0
+offset_bottom = 646.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/line_spacing = 2
+theme_override_font_sizes/font_size = 30
+text = "Start"
+
+[node name="Button2" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_stretch_ratio = 1.22
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 30
+text = "Exit"
+
+[node name="CenterContainer2" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_left = 636.0
+offset_top = 248.0
+offset_right = 1126.0
+offset_bottom = 324.0
+
+[node name="Label" type="Label" parent="CenterContainer2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0.54902, 0, 0.933333)
+theme_override_colors/font_shadow_color = Color(1, 0.952941, 1, 0.878431)
+theme_override_font_sizes/font_size = 50
+text = "evolvedotEXE"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Button2" to="." method="_on_button_2_pressed"]

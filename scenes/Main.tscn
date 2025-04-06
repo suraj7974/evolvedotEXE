@@ -1,0 +1,133 @@
+[gd_scene load_steps=6 format=3 uid="uid://cso3tmurcj07d"]
+
+[ext_resource type="Script" uid="uid://w05wdj1wvs46" path="res://scripts/controllers/game_controller.gd" id="1_rvslj"]
+[ext_resource type="Resource" uid="uid://df4innxxxabby" path="res://resources/varied/theme/theme_varied.tres" id="2_rarhs"]
+[ext_resource type="AudioStream" uid="uid://drwxjjph71q3m" path="res://assets/successed-295058.mp3" id="3_rarhs"]
+[ext_resource type="AudioStream" uid="uid://ra6dhnyupe1d" path="res://assets/wrong-47985.mp3" id="4_vcsgt"]
+
+[sub_resource type="Theme" id="Theme_rarhs"]
+
+[node name="Main" type="CanvasLayer"]
+script = ExtResource("1_rvslj")
+quiz = ExtResource("2_rarhs")
+color_right = Color(0.0863517, 0.316919, 0.969057, 1)
+color_wrong = Color(0, 0.784314, 0, 1)
+
+[node name="Content" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_rarhs")
+
+[node name="QuestionInfo" type="VBoxContainer" parent="Content"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -576.0
+offset_right = 576.0
+offset_bottom = 344.0
+grow_horizontal = 2
+
+[node name="QuestionText" type="Label" parent="Content/QuestionInfo"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_font_sizes/font_size = 50
+text = "Question"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="QuestionHolder" type="VBoxContainer" parent="Content"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -577.0
+offset_top = -292.0
+offset_right = 576.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="ButtonOption1" type="Button" parent="Content/QuestionHolder"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ButtonOption2" type="Button" parent="Content/QuestionHolder"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ButtonOption3" type="Button" parent="Content/QuestionHolder"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ButtonOption4" type="Button" parent="Content/QuestionHolder"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GameOver" type="ColorRect" parent="Content"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.460477, 0.321744, 0.202813, 1)
+
+[node name="Title" type="Label" parent="Content/GameOver"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.503
+anchor_top = 0.14
+anchor_right = 0.503
+anchor_bottom = 0.14
+offset_left = -271.456
+offset_top = 15.28
+offset_right = 276.544
+offset_bottom = 134.28
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 50
+text = "You Got :"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Score" type="Label" parent="Content/GameOver"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -313.0
+offset_top = 225.0
+offset_right = 323.0
+offset_bottom = 342.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 75
+text = "0/0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Button" type="Button" parent="Content/GameOver"]
+layout_mode = 0
+offset_left = 405.0
+offset_top = 385.0
+offset_right = 773.0
+offset_bottom = 543.0
+theme_override_font_sizes/font_size = 50
+text = "Play Again"
+
+[node name="AudioCorrect" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_rarhs")
+
+[node name="AudioIncorrect" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_vcsgt")
+
+[connection signal="pressed" from="Content/GameOver/Button" to="." method="_on_button_pressed"]
