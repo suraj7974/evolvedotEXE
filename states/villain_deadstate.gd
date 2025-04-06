@@ -60,8 +60,21 @@ func respawn():
 		if villain.has_node("Area2D") and villain.get_node("Area2D").has_node("CollisionShape2D"):
 			villain.get_node("Area2D").get_node("CollisionShape2D").set_deferred("disabled", false)
 		
-		# Reposition the villain - adjust this position as needed
-		villain.global_position = Vector2(400, 65)  # Set respawn position to a different area
+		# Reposition the villain - adjust Y position to match ground level with proper offset
+		var spawnX = 400  # X position is some distance away from player
+		var spawnY = villain.ground_y_position  # Default ground position
+		
+		# If player exists, use player's Y position as reference and apply the y_offset
+		if villain.player:
+			spawnY = villain.player.global_position.y - villain.y_offset
+			print("✓ Respawning villain at adjusted Y position:", spawnY)
+		
+		villain.global_position = Vector2(spawnX, spawnY)
+		print("✓ Villain respawned at position:", villain.global_position)
+		
+		# Ensure proper positioning by explicitly applying it
+		villain.velocity = Vector2.ZERO
+		villain.move_and_slide()
 		
 		# Re-enable processing
 		villain.set_physics_process(true)

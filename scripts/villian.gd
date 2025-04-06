@@ -6,6 +6,8 @@ extends CharacterBody2D
 @export var hp_bar: ProgressBar  # Will be replaced with ColorRect
 @export var detection_area: Area2D  
 @export var detection_range: float = 150 
+@export var ground_y_position: float = 300  # Default ground position
+@export var y_offset: float = -70  # Y offset to align villain with ground - adjust this value as needed
 
 const SPEED = 80.0
 const ATTACK_RANGE = 50.0  # Attack range
@@ -21,6 +23,11 @@ var health_bar_fill: ColorRect
 
 func _ready():
 	add_to_group("villain")
+	
+	print("👹 Villain initial position before adjustment: Y=", global_position.y)
+	
+	# Immediately adjust position at startup
+	adjust_villain_position()
 	
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
@@ -40,6 +47,30 @@ func _ready():
 			sprite.sprite_frames.set_animation_loop("dead", false)
 		if sprite.sprite_frames.has_animation("attack"):
 			sprite.sprite_frames.set_animation_loop("attack", false)
+
+func adjust_villain_position():
+	# Force villain to the ground
+	velocity.y = 0
+	
+	# Find player for ground reference
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() > 0:
+		var player_ref = players[0]
+		print("🎮 Found player at Y position:", player_ref.global_position.y)
+		
+		# Match player's Y and apply offset to align villain's feet with ground
+		global_position.y = player_ref.global_position.y - y_offset
+		print("👹 Villain position adjusted to Y=", global_position.y)
+		
+		# Ensure collision is instantly applied
+		velocity = Vector2.ZERO
+		move_and_slide()
+	else:
+		print("❌ Could not find player to match ground position")
+		global_position.y = ground_y_position - y_offset
+	
+	# Extra debugging
+	print("👹 Villain final position - X:", global_position.x, " Y:", global_position.y)
 
 func create_custom_health_bar():
 	# Remove existing hp_bar if any
@@ -88,6 +119,10 @@ func _physics_process(delta):
 	# Skip all processing if villain is dead
 	if is_dead:
 		return
+		
+	# Ensure position is corrected in the first few frames
+	if Engine.get_frames_drawn() < 5:
+		adjust_villain_position()
 
 	# Handle attack cooldown
 	if attack_cooldown > 0:
