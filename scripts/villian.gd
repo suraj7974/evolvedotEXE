@@ -3,11 +3,10 @@ extends CharacterBody2D
 @export var state_machine: Node  
 @export var sprite: AnimatedSprite2D  
 @export var player: CharacterBody2D  
-@export var hp_bar: ProgressBar  # Will be replaced with ColorRect
 @export var detection_area: Area2D  
 @export var detection_range: float = 150 
 @export var ground_y_position: float = 300  # Default ground position
-@export var y_offset: float = -70  # Y offset to align villain with ground - adjust this value as needed
+@export var y_offset: float = -70  # Y offset to align villain with ground
 @export var enable_learning: bool = true  # Enable/disable reinforcement learning
 
 const SPEED = 80.0
@@ -19,8 +18,9 @@ var attack_cooldown = 0
 var can_attack = true
 var is_dead = false
 var chase_persistence_range = 200.0
-var health_bar_bg: ColorRect
-var health_bar_fill: ColorRect
+var villain_name = "VILLAIN"  # Name to display on the UI
+
+# For AttackPatternLearner
 var attack_learner: AttackPatternLearner  # Reference to our reinforcement learning system
 
 func _ready():
@@ -44,8 +44,8 @@ func _ready():
 	else:
 		print("❌ ERROR: No player found!")
 	
-	# Create custom health bar using ColorRect
-	create_custom_health_bar()
+	# Update health in the fighting game HUD
+	update_health_bar()
 	
 	# Setup state machine and animations
 	state_machine = $StateMachine
@@ -79,33 +79,45 @@ func adjust_villain_position():
 	# Extra debugging
 	print("👹 Villain final position - X:", global_position.x, " Y:", global_position.y)
 
-func create_custom_health_bar():
-	# Remove existing hp_bar if any
-	if hp_bar and is_instance_valid(hp_bar):
-		hp_bar.queue_free()
-	
-	# Background bar (black/dark)
-	health_bar_bg = ColorRect.new()
-	health_bar_bg.color = Color(0.1, 0.1, 0.1, 0.6)
-	health_bar_bg.size = Vector2(32, 1) # 1 pixel height
-	health_bar_bg.position = Vector2(-16, -50)
-	add_child(health_bar_bg)
-	
-	# Health fill (red)
-	health_bar_fill = ColorRect.new()
-	health_bar_fill.color = Color(0.8, 0.1, 0.1, 0.8)
-	health_bar_fill.size = Vector2(32, 1) # 1 pixel height
-	health_bar_fill.position = Vector2(0, 0) # Relative to background
-	health_bar_bg.add_child(health_bar_fill)
-	
-	# Set initial health display
-	update_health_bar()
-
 func update_health_bar():
-	if health_bar_fill:
-		# Calculate width based on health percentage
-		var health_percent = float(health) / 100.0
-		health_bar_fill.size.x = 32 * health_percent
+	# Find the HUD created by the player
+	var hud = get_node_or_null("/root/GameHUD")
+	if not hud:
+		# If HUD doesn't exist yet, the player will create it
+		return
+	
+	# Access villain health components
+	var health_container = hud.get_node_or_null("FightingGameHUD/TopBar/VillainHealthContainer")
+	if health_container:
+		# Update health text
+		var health_text = health_container.get_node_or_null("VillainLayout/VillainHealthText")
+		if health_text:
+			health_text.text = str(int(health))
+		
+		# Update health bar fill with new path structure
+		var villain_layout = health_container.get_node_or_null("VillainLayout")
+		if villain_layout:
+			var bar_container = villain_layout.get_node_or_null("VillainBarContainer")
+			if bar_container:
+				var health_bg = bar_container.get_node_or_null("VillainHealthBarBG")
+				if health_bg:
+					var health_fill = health_bg.get_node_or_null("VillainHealthBarFill")
+					if health_fill:
+						var percent = float(health) / 100.0
+						health_fill.size.x = 256 * percent
+						
+						# Change color based on health value
+						if health < 30:
+							health_fill.color = Color(0.9, 0.1, 0.1, 1.0)  # Intense red when low
+						elif health < 60:
+							health_fill.color = Color(0.9, 0.4, 0.2, 1.0)  # Orange when medium
+						else:
+							health_fill.color = Color(0.9, 0.2, 0.2, 1.0)  # Standard red when high
+		
+		# Update villain name
+		var name_label = health_container.get_node_or_null("VillainLayout/VillainNameLabel")
+		if name_label:
+			name_label.text = villain_name
 
 func is_player_near() -> bool:
 	if player:
@@ -190,7 +202,7 @@ func take_damage(amount, attack_type: String = "attack1"):
 	# Apply the (potentially reduced) damage
 	print("💥 Villain taking damage:", actual_damage, " (original: ", amount, ")")
 	health -= actual_damage
-	update_health_bar()  # Update custom health bar
+	update_health_bar()  # Update the health bar in the HUD
 	
 	# Flash the sprite to indicate damage
 	if sprite:

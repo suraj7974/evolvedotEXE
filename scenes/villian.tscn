@@ -235,12 +235,11 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_gy365"]
 radius = 23.3452
 
-[node name="villian" type="CharacterBody2D" node_paths=PackedStringArray("state_machine", "sprite", "player", "hp_bar", "detection_area")]
+[node name="villian" type="CharacterBody2D" node_paths=PackedStringArray("state_machine", "sprite", "player", "detection_area")]
 script = ExtResource("1_gy365")
 state_machine = NodePath("StateMachine")
 sprite = NodePath("AnimatedSprite2D")
 player = NodePath(".")
-hp_bar = NodePath("ProgressBar")
 detection_area = NodePath("Area2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -266,10 +265,6 @@ script = ExtResource("9_f6bmn")
 
 [node name="villain_deadstate" type="Node" parent="StateMachine"]
 script = ExtResource("10_0rl0p")
-
-[node name="ProgressBar" type="ProgressBar" parent="."]
-offset_right = 4.0
-offset_bottom = 27.0
 
 [node name="Area2D" type="Area2D" parent="."]
 

@@ -2,57 +2,251 @@ extends CharacterBody2D
 
 @export var state_machine: Node  # Expose StateMachine
 @export var sprite: AnimatedSprite2D  # Expose Sprite for animations
-@export var hp_bar: ProgressBar  # Player HP bar
 
 var health = 100
 const JUMP_VELOCITY = -400.0
 const SPEED = 300.0
 const GRAVITY = 980.0
-var health_bar_bg: ColorRect
-var health_bar_fill: ColorRect
+var player_name = "YOU"  # Name to display on the UI
+
+# Reference to the HUD
+var game_hud: CanvasLayer
 
 func _ready():
-	# Create custom health bar using ColorRect
-	create_custom_health_bar()
-	
 	# Setup the camera to follow the player smoothly
 	setup_camera()
+	
+	# Create or access the shared HUD
+	setup_game_hud()
 	
 	print("Player Y:", global_position.y)
 	if state_machine:
 		print("✅ State Machine Loaded Successfully!")
 
-func create_custom_health_bar():
-	# Remove existing hp_bar if any
-	if hp_bar and is_instance_valid(hp_bar):
-		hp_bar.queue_free()
+func setup_game_hud():
+	# Look for existing HUD
+	var existing_hud = get_node_or_null("/root/GameHUD")
 	
-	# Background bar (black/dark)
-	health_bar_bg = ColorRect.new()
-	health_bar_bg.color = Color(0.1, 0.1, 0.1, 0.6)
-	health_bar_bg.size = Vector2(32, 1) # 1 pixel height
-	health_bar_bg.position = Vector2(-16, -50)
-	add_child(health_bar_bg)
+	if existing_hud:
+		game_hud = existing_hud
+	else:
+		# Create new HUD if it doesn't exist
+		game_hud = CanvasLayer.new()
+		game_hud.name = "GameHUD"
+		game_hud.layer = 10  # Top layer
+		get_tree().root.call_deferred("add_child", game_hud)
+		
+		# Create the fighting game style HUD
+		create_fighting_game_hud()
+
+func create_fighting_game_hud():
+	# Create main container
+	var hud_container = Control.new()
+	hud_container.name = "FightingGameHUD"
+	hud_container.set_anchors_preset(Control.PRESET_FULL_RECT)  # Fill the screen
+	game_hud.add_child(hud_container)
 	
-	# Health fill (green)
-	health_bar_fill = ColorRect.new()
-	health_bar_fill.color = Color(0.0, 0.8, 0.3, 0.8)
-	health_bar_fill.size = Vector2(32, 1) # 1 pixel height
-	health_bar_fill.position = Vector2(0, 0) # Relative to background
-	health_bar_bg.add_child(health_bar_fill)
+	# Add top bar background with a cleaner design
+	var top_bar = ColorRect.new()
+	top_bar.name = "TopBar"
+	top_bar.color = Color(0.05, 0.05, 0.07, 0.85)  # Darker, more transparent
+	top_bar.custom_minimum_size = Vector2(1152, 70)  # Slightly taller
+	top_bar.position = Vector2(0, 0)
+	hud_container.add_child(top_bar)
 	
-	# Set initial health display
-	update_health_bar()
+	# Add a thin separator line
+	var separator = ColorRect.new()
+	separator.name = "Separator"
+	separator.color = Color(0.7, 0.7, 0.8, 0.4)  # Subtle highlight
+	separator.position = Vector2(0, 68)
+	separator.custom_minimum_size = Vector2(1152, 2)
+	top_bar.add_child(separator)
+	
+	# Create player health container - Using MarginContainer instead of HBoxContainer
+	var player_health_container = MarginContainer.new()
+	player_health_container.name = "PlayerHealthContainer"
+	player_health_container.position = Vector2(20, 15)
+	player_health_container.size = Vector2(400, 40)
+	top_bar.add_child(player_health_container)
+	
+	# Player side layout (HBox)
+	var player_layout = HBoxContainer.new()
+	player_layout.name = "PlayerLayout"
+	player_layout.size_flags_horizontal = Control.SIZE_FILL
+	player_layout.size_flags_vertical = Control.SIZE_FILL
+	player_health_container.add_child(player_layout)
+	
+	# Player name label
+	var player_name_label = Label.new()
+	player_name_label.name = "PlayerNameLabel"
+	player_name_label.text = player_name
+	player_name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	player_name_label.add_theme_color_override("font_color", Color(0.9, 0.9, 1.0))
+	player_layout.add_child(player_name_label)
+	
+	# Add spacer
+	var spacer = Control.new()
+	spacer.name = "Spacer"
+	spacer.custom_minimum_size = Vector2(10, 0)
+	player_layout.add_child(spacer)
+	
+	# Player health bar frame - using a single container
+	var player_bar_container = Control.new()
+	player_bar_container.name = "PlayerBarContainer"
+	player_bar_container.custom_minimum_size = Vector2(260, 40)
+	player_bar_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	player_layout.add_child(player_bar_container)
+	
+	# Frame (border)
+	var player_bar_frame = ColorRect.new()
+	player_bar_frame.name = "PlayerHealthBarFrame"
+	player_bar_frame.color = Color(0.7, 0.7, 0.8, 0.4)  # Light border color
+	player_bar_frame.size = Vector2(260, 40)
+	player_bar_frame.position = Vector2(0, 0)
+	player_bar_container.add_child(player_bar_frame)
+	
+	# Background
+	var player_bar_bg = ColorRect.new()
+	player_bar_bg.name = "PlayerHealthBarBG"
+	player_bar_bg.color = Color(0.12, 0.12, 0.14, 1.0)  # Darker background
+	player_bar_bg.position = Vector2(2, 2)
+	player_bar_bg.size = Vector2(256, 36)
+	player_bar_container.add_child(player_bar_bg)
+	
+	# Fill
+	var player_bar_fill = ColorRect.new()
+	player_bar_fill.name = "PlayerHealthBarFill"
+	player_bar_fill.color = Color(0.1, 0.8, 0.3, 1.0)  # Brighter green
+	player_bar_fill.position = Vector2(0, 0)
+	player_bar_fill.size = Vector2(256, 36)
+	player_bar_bg.add_child(player_bar_fill)
+	
+	# Add spacer
+	var spacer2 = Control.new()
+	spacer2.name = "Spacer2"
+	spacer2.custom_minimum_size = Vector2(10, 0)
+	player_layout.add_child(spacer2)
+	
+	# Player health text
+	var player_health_text = Label.new()
+	player_health_text.name = "PlayerHealthText"
+	player_health_text.text = str(health)
+	player_health_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	player_health_text.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	player_layout.add_child(player_health_text)
+	
+	# Create villain health container - Using MarginContainer
+	var villain_health_container = MarginContainer.new()
+	villain_health_container.name = "VillainHealthContainer"
+	villain_health_container.position = Vector2(700, 15)
+	villain_health_container.size = Vector2(400, 40)
+	top_bar.add_child(villain_health_container)
+	
+	# Villain side layout (HBox)
+	var villain_layout = HBoxContainer.new()
+	villain_layout.name = "VillainLayout"
+	villain_layout.size_flags_horizontal = Control.SIZE_FILL
+	villain_layout.size_flags_vertical = Control.SIZE_FILL
+	villain_health_container.add_child(villain_layout)
+	
+	# Villain health text
+	var villain_health_text = Label.new()
+	villain_health_text.name = "VillainHealthText"
+	villain_health_text.text = "100"
+	villain_health_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	villain_health_text.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	villain_layout.add_child(villain_health_text)
+	
+	# Add spacer
+	var spacer3 = Control.new()
+	spacer3.name = "Spacer3"
+	spacer3.custom_minimum_size = Vector2(10, 0)
+	villain_layout.add_child(spacer3)
+	
+	# Villain health bar container
+	var villain_bar_container = Control.new()
+	villain_bar_container.name = "VillainBarContainer"
+	villain_bar_container.custom_minimum_size = Vector2(260, 40)
+	villain_bar_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	villain_layout.add_child(villain_bar_container)
+	
+	# Frame (border)
+	var villain_bar_frame = ColorRect.new()
+	villain_bar_frame.name = "VillainHealthBarFrame"
+	villain_bar_frame.color = Color(0.7, 0.7, 0.8, 0.4)  # Light border color
+	villain_bar_frame.size = Vector2(260, 40)
+	villain_bar_frame.position = Vector2(0, 0)
+	villain_bar_container.add_child(villain_bar_frame)
+	
+	# Background
+	var villain_bar_bg = ColorRect.new()
+	villain_bar_bg.name = "VillainHealthBarBG"
+	villain_bar_bg.color = Color(0.12, 0.12, 0.14, 1.0)  # Darker background
+	villain_bar_bg.position = Vector2(2, 2)
+	villain_bar_bg.size = Vector2(256, 36)
+	villain_bar_container.add_child(villain_bar_bg)
+	
+	# Fill
+	var villain_bar_fill = ColorRect.new()
+	villain_bar_fill.name = "VillainHealthBarFill"
+	villain_bar_fill.color = Color(0.9, 0.2, 0.2, 1.0)  # Brighter red
+	villain_bar_fill.position = Vector2(0, 0)
+	villain_bar_fill.size = Vector2(256, 36)
+	villain_bar_bg.add_child(villain_bar_fill)
+	
+	# Add spacer
+	var spacer4 = Control.new()
+	spacer4.name = "Spacer4"
+	spacer4.custom_minimum_size = Vector2(10, 0)
+	villain_layout.add_child(spacer4)
+	
+	# Villain name label
+	var villain_name_label = Label.new()
+	villain_name_label.name = "VillainNameLabel"
+	villain_name_label.text = "VILLAIN"
+	villain_name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	villain_name_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.9))
+	villain_layout.add_child(villain_name_label)
 
 func update_health_bar():
-	if health_bar_fill:
-		# Calculate width based on health percentage
-		var health_percent = float(health) / 100.0
-		health_bar_fill.size.x = 32 * health_percent
+	# Find the HUD
+	var hud = get_node_or_null("/root/GameHUD")
+	if not hud:
+		# If HUD doesn't exist yet, create it
+		setup_game_hud()
+		hud = game_hud
+	
+	# Access player health components
+	var health_container = hud.get_node_or_null("FightingGameHUD/TopBar/PlayerHealthContainer")
+	if health_container:
+		# Update health text
+		var health_text = health_container.get_node_or_null("PlayerLayout/PlayerHealthText")
+		if health_text:
+			health_text.text = str(int(health))
+		
+		# Update health bar fill with the new structure
+		var player_layout = health_container.get_node_or_null("PlayerLayout")
+		if player_layout:
+			var bar_container = player_layout.get_node_or_null("PlayerBarContainer")
+			if bar_container:
+				var health_bg = bar_container.get_node_or_null("PlayerHealthBarBG")
+				if health_bg:
+					var health_fill = health_bg.get_node_or_null("PlayerHealthBarFill")
+					if health_fill:
+						var percent = float(health) / 100.0
+						health_fill.size.x = 256 * percent
+						
+						# Change color based on health value
+						if health < 30:
+							health_fill.color = Color(0.9, 0.2, 0.2, 1.0)  # Red when low
+						elif health < 60:
+							health_fill.color = Color(0.9, 0.7, 0.1, 1.0)  # Yellow when medium
+						else:
+							health_fill.color = Color(0.1, 0.8, 0.3, 1.0)  # Green when high
 
 func take_damage(amount):
 	health -= amount
-	update_health_bar()  # Update custom health bar
+	update_health_bar()  # Update the health bar in the HUD
 	
 	# Visual feedback of damage
 	if sprite:
@@ -80,7 +274,7 @@ func setup_camera():
 	
 	# Set smoothing properties
 	camera.position_smoothing_enabled = true
-	camera.position_smoothing_speed = 7.0  # Higher value = more responsive, lower = smoother
+	camera.position_smoothing_speed = 7.0
 	
 	# Set rotation smoothing properties
 	camera.rotation_smoothing_enabled = true
@@ -89,7 +283,7 @@ func setup_camera():
 	# Set zoom and limits if needed
 	camera.zoom = Vector2(1.0, 1.0)  # Default zoom level
 	
-	# Optional drag margin (makes camera move only when player approaches screen edge)
+	# Optional drag margin
 	camera.drag_horizontal_enabled = true
 	camera.drag_vertical_enabled = true
 	camera.drag_left_margin = 0.1
@@ -113,7 +307,7 @@ func _physics_process(delta: float):
 	# Move the player
 	velocity.x = direction * SPEED
 
-	# ✅ Flip the sprite to face movement direction
+	# Flip the sprite to face movement direction
 	if direction != 0:
 		sprite.flip_h = (direction == -1)  # Face left if moving left
 		
