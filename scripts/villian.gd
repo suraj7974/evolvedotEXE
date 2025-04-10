@@ -23,6 +23,12 @@ var villain_name = "VILLAIN"  # Name to display on the UI
 # For AttackPatternLearner
 var attack_learner: AttackPatternLearner  # Reference to our reinforcement learning system
 
+# Helper method to set attack cooldown
+func set_attack_cooldown(duration: float) -> void:
+	attack_cooldown = duration
+	can_attack = false
+	print("🕒 Villain attack on cooldown for " + str(duration) + " seconds")
+
 func _ready():
 	add_to_group("villain")
 	
