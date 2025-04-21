@@ -7,18 +7,8 @@ func enter():
 		# Wait for animation to complete (approximately)
 		await get_tree().create_timer(0.8).timeout
 	
-	await get_tree().create_timer(2).timeout  # Wait for 2 seconds before respawning
-	respawn()
+	# Notify the level manager instead of respawning
+	LevelManager.player_died()
 
 func exit():
 	print("🚀 Exiting DeadState")
-
-func respawn():
-	print("🔄 Respawning Player")
-	player.global_position = Vector2(100, 300)  # Set respawn position
-	player.health = 100  # Restore HP
-	
-	# Update the health bar - use the custom update function
-	player.update_health_bar()
-	
-	player.state_machine.transition_to("IdleState")  # Go back to idle

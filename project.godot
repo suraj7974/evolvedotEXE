@@ -15,6 +15,10 @@ run/main_scene="uid://c1aed33w5dxbs"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+LevelManager="*res://scripts/level_manager.gd"
+
 [input]
 
 attack1={

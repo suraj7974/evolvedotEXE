@@ -28,13 +28,15 @@ func enter():
 					villain.sprite.sprite_frames.set_animation_loop("dead", false)
 					print("✓ Set dead animation to not loop")
 			
-			# Wait for animation to complete before respawning
+			# Wait for animation to complete before advancing to next level
 			await get_tree().create_timer(1.5).timeout
-			respawn()
+			
+			# Notify the level manager that the villain has been defeated
+			LevelManager.villain_died()
 		else:
 			print("❌ ERROR: play_animation() not found!")
 			await get_tree().create_timer(1.5).timeout
-			respawn()
+			LevelManager.villain_died()
 
 func respawn():
 	print("🔄 Respawning Villain")

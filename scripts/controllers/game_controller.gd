@@ -46,7 +46,9 @@ func _buttons_answer(button) -> void:
 	
 func _next_question() -> void:
 	for bt in buttons:
-		bt.pressed.disconnect(_buttons_answer)
+		# Check if signal is connected before disconnecting
+		if bt.pressed.is_connected(_buttons_answer.bind(bt)):
+			bt.pressed.disconnect(_buttons_answer.bind(bt))
 		
 	await get_tree().create_timer(0.5).timeout
 	

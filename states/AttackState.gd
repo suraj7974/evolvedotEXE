@@ -1,11 +1,21 @@
 extends State
 
 var attack_type = "attack1"  # Default attack type
-var damage = 10  # Amount of damage player deals when attacking
+var damage = 10  # Default damage amount
+var damage_attack1 = 10  # Damage for attack1
+var damage_attack2 = 15  # Damage for attack2
 
 func enter(new_attack_type = "attack1"):
 	attack_type = new_attack_type
 	print("Entered Attack State with:", attack_type)
+	
+	# Set the damage value based on the attack type
+	if attack_type == "attack1":
+		damage = damage_attack1
+	elif attack_type == "attack2":
+		damage = damage_attack2
+		
+	print("Using damage value:", damage)
 
 	if player and player.sprite and player.sprite.sprite_frames:
 		if player.sprite.sprite_frames.has_animation(attack_type):
