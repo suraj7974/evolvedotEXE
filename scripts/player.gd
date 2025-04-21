@@ -6,7 +6,7 @@ extends CharacterBody2D
 var health = 100
 const MAX_DISPLAY_HEALTH = 100  # This is used for health bar display scaling
 const JUMP_VELOCITY = -400.0
-const SPEED = 300.0
+var SPEED = 300.0  # Changed from const to var so it can be modified
 const GRAVITY = 980.0
 var player_name = "YOU"  # Name to display on the UI
 

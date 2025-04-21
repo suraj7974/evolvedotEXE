@@ -9,11 +9,11 @@ extends CharacterBody2D
 @export var y_offset: float = -70  # Y offset to align villain with ground
 @export var enable_learning: bool = true  # Enable/disable reinforcement learning
 
-const SPEED = 80.0
-const ATTACK_RANGE = 50.0  # Attack range
-const DAMAGE = 10  # Damage per hit
+var SPEED = 80.0  # Changed from const to var so it can be modified
+var ATTACK_RANGE = 50.0  # Changed from const to var so it can be modified
+var DAMAGE = 5  # Changed from const to var so it can be modified
 var health = 100
-const MAX_DISPLAY_HEALTH = 100  # This is used for health bar display scaling
+var MAX_DISPLAY_HEALTH = 100  # This will be updated based on current level
 const GRAVITY = 980.0
 var attack_cooldown = 0
 var can_attack = true
@@ -39,6 +39,17 @@ func _ready():
 	if enable_learning:
 		attack_learner = AttackPatternLearner.new()
 		print("🧠 Attack pattern learning system initialized")
+	
+	# Set MAX_DISPLAY_HEALTH based on current level
+	# First, try to find the LevelManager to determine which level we're on
+	if Engine.get_singleton("LevelManager") or get_node_or_null("/root/LevelManager"):
+		var level_data = LevelManager.level_data
+		var current_level = LevelManager.current_level
+		
+		if current_level in level_data and "villain" in level_data[current_level]:
+			# Set the max health display to match the current level's villain health
+			MAX_DISPLAY_HEALTH = level_data[current_level]["villain"]["health"]
+			print("✅ Adjusted MAX_DISPLAY_HEALTH to: " + str(MAX_DISPLAY_HEALTH))
 	
 	# Immediately adjust position at startup
 	adjust_villain_position()
@@ -93,6 +104,10 @@ func update_health_bar():
 		# If HUD doesn't exist yet, the player will create it
 		return
 	
+	# Print debug info for health bar update
+	print("🔄 Updating villain health bar - Current health: " + str(health) + 
+		", Max display health: " + str(MAX_DISPLAY_HEALTH))
+	
 	# Access villain health components
 	var health_container = hud.get_node_or_null("FightingGameHUD/TopBar/VillainHealthContainer")
 	if health_container:
@@ -111,11 +126,17 @@ func update_health_bar():
 					var health_fill = health_bg.get_node_or_null("VillainHealthBarFill")
 					if health_fill:
 						# Calculate percentage based on MAX_DISPLAY_HEALTH instead of actual health
-						var percent = min(float(health) / MAX_DISPLAY_HEALTH, 1.0)
-						health_fill.size.x = 256 * percent
+						var percent = clamp(float(health) / float(MAX_DISPLAY_HEALTH), 0.0, 1.0)
+						var new_width = int(256 * percent)
+						
+						# Force immediate size update to ensure bar decreases properly
+						health_fill.size.x = new_width
+						
+						print("📊 Health bar updated: " + str(health) + "/" + str(MAX_DISPLAY_HEALTH) + 
+							" = " + str(percent) + " → Width: " + str(new_width))
 						
 						# Change color based on health ratio relative to MAX_DISPLAY_HEALTH
-						var health_ratio = float(health) / MAX_DISPLAY_HEALTH
+						var health_ratio = float(health) / float(MAX_DISPLAY_HEALTH)
 						if health_ratio < 0.3:
 							health_fill.color = Color(0.9, 0.1, 0.1, 1.0)  # Intense red when low
 						elif health_ratio < 0.6:

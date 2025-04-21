@@ -1,16 +1,21 @@
 extends VillainState
 
+# Add this as a property to the class so LevelManager can reset it
+var notified_death = false
+
 func enter():
 	print("☠️ Entering Dead State")  
+	notified_death = false
+	
 	if villain:
-		# Ensure villain is marked as dead
+		# Ensure villain is properly marked as dead
 		villain.is_dead = true
 		
 		# Stop all movement
 		villain.velocity = Vector2.ZERO
 		villain.move_and_slide()
 		
-		# Disable collisions
+		# Disable collisions to prevent further interactions
 		if villain.has_node("CollisionShape2D"):
 			villain.get_node("CollisionShape2D").set_deferred("disabled", true)
 		
@@ -28,15 +33,34 @@ func enter():
 					villain.sprite.sprite_frames.set_animation_loop("dead", false)
 					print("✓ Set dead animation to not loop")
 			
-			# Wait for animation to complete before advancing to next level
-			await get_tree().create_timer(1.5).timeout
-			
-			# Notify the level manager that the villain has been defeated
-			LevelManager.villain_died()
+			 # Start a delayed notification to level manager
+			notify_level_manager_delayed()
 		else:
 			print("❌ ERROR: play_animation() not found!")
-			await get_tree().create_timer(1.5).timeout
-			LevelManager.villain_died()
+			# Still notify even if animation failed, but with a delay
+			notify_level_manager_delayed()
+
+# Function to notify level manager with a delay to ensure animation plays first
+func notify_level_manager_delayed():
+	# Wait for animation to complete before advancing to next level
+	await get_tree().create_timer(1.5).timeout
+	
+	# Prevent duplicate notifications
+	if notified_death or !is_instance_valid(self):
+		return
+	
+	print("⚡ Checking if villain can notify death")
+	if villain and villain.is_dead:
+		notified_death = true
+		print("✓ Notifying LevelManager of villain death")
+		
+		# Use call_deferred to avoid crashes if called during physics processing
+		if Engine.get_singleton("LevelManager") or get_node_or_null("/root/LevelManager"):
+			LevelManager.call_deferred("villain_died")
+		else:
+			print("❌ ERROR: LevelManager not found!")
+	else:
+		print("❓ Villain is not dead or no longer exists, not notifying")
 
 func respawn():
 	print("🔄 Respawning Villain")
@@ -94,7 +118,8 @@ func respawn():
 		transitioned.emit("IdleState")
 
 func exit():
-	print("🏃‍♂️ Exiting Dead State")
+	print("🏃‍♂️ Exiting villain dead state")
+	# Don't reset notified_death here - it should be reset when re-entering the state
 
 func _process(_delta):
 	pass  # No movement in dead state
