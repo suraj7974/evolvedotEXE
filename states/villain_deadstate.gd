@@ -53,6 +53,10 @@ func respawn():
 		# Reset death flag
 		villain.is_dead = false
 		
+		# Reset attack ability
+		villain.can_attack = true
+		villain.attack_cooldown = 0
+		
 		 # Reset learning system - villain "forgets" previous attack patterns
 		if villain.has_method("reset_learning"):
 			villain.reset_learning()
