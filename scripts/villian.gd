@@ -11,8 +11,9 @@ extends CharacterBody2D
 
 const SPEED = 80.0
 const ATTACK_RANGE = 50.0  # Attack range
-const DAMAGE = 5  # Damage per hit
+const DAMAGE = 10  # Damage per hit
 var health = 100
+const MAX_DISPLAY_HEALTH = 100  # This is used for health bar display scaling
 const GRAVITY = 980.0
 var attack_cooldown = 0
 var can_attack = true
@@ -95,7 +96,7 @@ func update_health_bar():
 	# Access villain health components
 	var health_container = hud.get_node_or_null("FightingGameHUD/TopBar/VillainHealthContainer")
 	if health_container:
-		# Update health text
+		# Update health text - show actual health value
 		var health_text = health_container.get_node_or_null("VillainLayout/VillainHealthText")
 		if health_text:
 			health_text.text = str(int(health))
@@ -109,13 +110,15 @@ func update_health_bar():
 				if health_bg:
 					var health_fill = health_bg.get_node_or_null("VillainHealthBarFill")
 					if health_fill:
-						var percent = float(health) / 100.0
+						# Calculate percentage based on MAX_DISPLAY_HEALTH instead of actual health
+						var percent = min(float(health) / MAX_DISPLAY_HEALTH, 1.0)
 						health_fill.size.x = 256 * percent
 						
-						# Change color based on health value
-						if health < 30:
+						# Change color based on health ratio relative to MAX_DISPLAY_HEALTH
+						var health_ratio = float(health) / MAX_DISPLAY_HEALTH
+						if health_ratio < 0.3:
 							health_fill.color = Color(0.9, 0.1, 0.1, 1.0)  # Intense red when low
-						elif health < 60:
+						elif health_ratio < 0.6:
 							health_fill.color = Color(0.9, 0.4, 0.2, 1.0)  # Orange when medium
 						else:
 							health_fill.color = Color(0.9, 0.2, 0.2, 1.0)  # Standard red when high

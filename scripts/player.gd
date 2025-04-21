@@ -4,6 +4,7 @@ extends CharacterBody2D
 @export var sprite: AnimatedSprite2D  # Expose Sprite for animations
 
 var health = 100
+const MAX_DISPLAY_HEALTH = 100  # This is used for health bar display scaling
 const JUMP_VELOCITY = -400.0
 const SPEED = 300.0
 const GRAVITY = 980.0
@@ -152,7 +153,7 @@ func create_fighting_game_hud():
 	# Villain health text
 	var villain_health_text = Label.new()
 	villain_health_text.name = "VillainHealthText"
-	villain_health_text.text = "100"
+	villain_health_text.text = get_villain_health() # Get actual villain health instead of hardcoding "100"
 	villain_health_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	villain_health_text.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
 	villain_layout.add_child(villain_health_text)
@@ -219,7 +220,7 @@ func update_health_bar():
 	# Access player health components
 	var health_container = hud.get_node_or_null("FightingGameHUD/TopBar/PlayerHealthContainer")
 	if health_container:
-		# Update health text
+		# Update health text - show actual health value
 		var health_text = health_container.get_node_or_null("PlayerLayout/PlayerHealthText")
 		if health_text:
 			health_text.text = str(int(health))
@@ -233,13 +234,15 @@ func update_health_bar():
 				if health_bg:
 					var health_fill = health_bg.get_node_or_null("PlayerHealthBarFill")
 					if health_fill:
-						var percent = float(health) / 100.0
+						# Calculate percentage based on MAX_DISPLAY_HEALTH instead of actual health
+						var percent = min(float(health) / MAX_DISPLAY_HEALTH, 1.0)
 						health_fill.size.x = 256 * percent
 						
-						# Change color based on health value
-						if health < 30:
+						# Change color based on health value relative to MAX_DISPLAY_HEALTH
+						var health_ratio = float(health) / MAX_DISPLAY_HEALTH
+						if health_ratio < 0.3:
 							health_fill.color = Color(0.9, 0.2, 0.2, 1.0)  # Red when low
-						elif health < 60:
+						elif health_ratio < 0.6:
 							health_fill.color = Color(0.9, 0.7, 0.1, 1.0)  # Yellow when medium
 						else:
 							health_fill.color = Color(0.1, 0.8, 0.3, 1.0)  # Green when high
@@ -330,3 +333,31 @@ func play_animation(anim_name: String):
 			print("❌ ERROR: Animation '" + anim_name + "' not found!")
 	else:
 		print("❌ ERROR: sprite or sprite_frames is missing!")
+
+func get_villain_health() -> String:
+	# Find villain in the scene
+	var villains = get_tree().get_nodes_in_group("villain")
+	if villains.size() > 0:
+		return str(int(villains[0].health))
+	else:
+		# If villain isn't found yet, use a timer to try again in the next frame
+		call_deferred("_try_update_villain_health_later")
+		return "..." # Show placeholder until we get the actual value
+		
+func _try_update_villain_health_later():
+	# This will try to update the villain health text shortly after startup
+	await get_tree().create_timer(0.1).timeout
+	
+	# Try to find the HUD and update villain health text
+	var hud = get_node_or_null("/root/GameHUD")
+	if hud:
+		var health_container = hud.get_node_or_null("FightingGameHUD/TopBar/VillainHealthContainer")
+		if health_container:
+			var health_text = health_container.get_node_or_null("VillainLayout/VillainHealthText")
+			if health_text:
+				var villains = get_tree().get_nodes_in_group("villain")
+				if villains.size() > 0:
+					health_text.text = str(int(villains[0].health))
+				else:
+					# Try again if villain still not found
+					call_deferred("_try_update_villain_health_later")
