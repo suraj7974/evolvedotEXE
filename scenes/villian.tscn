@@ -152,7 +152,7 @@ detection_area = NodePath("Area2D")
 sprite_frames = SubResource("SpriteFrames_j0ccg")
 animation = &"attack"
 autoplay = "idle"
-frame_progress = 0.798239
+frame_progress = 0.15448
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_t1111")

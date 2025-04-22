@@ -2,10 +2,10 @@ extends Node
 
 signal game_completed(success)
 
-@export var num_rounds = 3  # Changed from 5 to 4 rounds to win
+@export var num_rounds = 3  
 @export var starting_sequence_length = 2  # Starting pattern length
-@export var show_time = 0.8  # How long each button lights up
-@export var pause_time = 0.2  # Pause between button highlights
+@export var show_time = 1.2  # How long each button lights up - increased from 0.8 to 1.2
+@export var pause_time = 0.3  # Pause between button highlights - increased from 0.2 to 0.3
 @export_range(0.0, 30.0) var blur_target = 10.0  # Max blur amount
 
 enum GameState { SHOWING_PATTERN, PLAYER_TURN, GAME_OVER }
@@ -17,10 +17,10 @@ var current_round = 1
 var showing_index = 0      # Index in the sequence being shown
 var buttons = []           # Reference to the button nodes
 var button_colors = [      # Colors for buttons (normal, highlighted) - reduced to 4 colors
-	[Color(1, 0.2, 0.2, 0.8), Color(1, 0.8, 0.8, 1)],     # Red - much brighter highlight
-	[Color(0.2, 1, 0.2, 0.8), Color(0.7, 1, 0.7, 1)],     # Green - much brighter highlight
-	[Color(0.2, 0.2, 1, 0.8), Color(0.7, 0.7, 1, 1)],     # Blue - much brighter highlight
-	[Color(1, 1, 0.2, 0.8), Color(1, 1, 0.7, 1)],         # Yellow - much brighter highlight
+	[Color(0.7, 0.2, 0.2, 0.8), Color(1.0, 0.3, 0.3, 1.0)],     # Red - much brighter highlight with full alpha
+	[Color(0.2, 0.7, 0.2, 0.8), Color(0.2, 1.0, 0.2, 1.0)],     # Green - much brighter highlight with full alpha
+	[Color(0.2, 0.2, 0.7, 0.8), Color(0.3, 0.3, 1.0, 1.0)],     # Blue - much brighter highlight with full alpha
+	[Color(0.7, 0.7, 0.2, 0.8), Color(1.0, 1.0, 0.2, 1.0)],     # Yellow - much brighter highlight with full alpha
 ]
 var button_pitches = [0.7, 0.8, 0.9, 1.0]  # Different pitch for each button - adjusted to 4
 var success = false
