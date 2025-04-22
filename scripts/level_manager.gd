@@ -13,7 +13,7 @@ var level_data = {
 		"player": {
 			"health": 100,
 			"damage_attack1": 10,
-			"damage_attack2": 15,
+			"damage_attack2": 10,
 			"speed": 300.0,
 		},
 		"villain": {
@@ -29,19 +29,19 @@ var level_data = {
 			"health": 150,
 			"damage_attack1": 15,
 			"damage_attack2": 20,
-			"speed": 325.0,
+			"speed": 300.0,
 		},
 		"villain": {
 			"health": 200,
-			"damage": 5,
+			"damage": 10,
 			"speed": 90.0,
-			"attack_range": 55.0,
+			"attack_range": 70.0,
 			"name": "VILLAIN LVL 2"
 		}
 	},
 	3: {
 		"player": {
-			"health": 200,
+			"health": 250,
 			"damage_attack1": 20,
 			"damage_attack2": 30,
 			"speed": 350.0,
@@ -50,7 +50,7 @@ var level_data = {
 			"health": 400,
 			"damage": 15,
 			"speed": 100.0,
-			"attack_range": 60.0,
+			"attack_range": 85.0,
 			"name": "FINAL BOSS"
 		}
 	}
@@ -75,6 +75,14 @@ var second_chance_used = {
 	2: false,
 	3: false
 }
+
+# Attack pattern recognition system
+var attack_history = []  # Stores recent attack types
+var attack_pattern_detected = false  # Flag when pattern is detected
+var pattern_recognition_cooldown = 0.0  # Timer to reset pattern detection
+var pattern_memory_time = 10.0 
+var min_pattern_length = 3  # Minimum attacks to detect a pattern
+var last_attack_time = 0.0  # When the last attack occurred
 
 func _ready():
 	# Reset level on new game
@@ -637,3 +645,116 @@ func show_level_message(level_text):
 		
 	show_message(level_text, message, level_color)
 	log_debug("Level transition message displayed: " + level_text + " - " + message)
+
+func _process(delta):
+	# Update pattern recognition cooldown if active
+	if pattern_recognition_cooldown > 0:
+		pattern_recognition_cooldown -= delta
+		if pattern_recognition_cooldown <= 0:
+			log_debug("Pattern recognition reset - villain has forgotten previous patterns")
+			attack_pattern_detected = false
+			attack_history.clear()
+
+# Called when player attacks villain
+func register_player_attack(attack_type, damage):
+	var current_time = Time.get_ticks_msec() / 1000.0
+	
+	# Check if this is a new encounter (after a long pause)
+	if current_time - last_attack_time > 5.0:
+		attack_history.clear()
+		attack_pattern_detected = false
+		log_debug("New combat encounter detected, resetting attack history")
+	
+	last_attack_time = current_time
+	
+	# Record this attack
+	attack_history.append({
+		"type": attack_type,
+		"time": current_time
+	})
+	
+	# Keep only recent attacks (for pattern detection)
+	while attack_history.size() > 10:
+		attack_history.pop_front()
+	
+	# Calculate modified damage based on pattern detection
+	var modified_damage = damage
+	
+	# Only check for patterns after we have enough history
+	if attack_history.size() >= min_pattern_length:
+		if detect_repetitive_pattern():
+			# Pattern detected!
+			if !attack_pattern_detected:
+				attack_pattern_detected = true
+				log_debug("Repetitive attack pattern detected! Villain is adapting.")
+			
+			# Drastically reduce damage for repetitive attacks
+			modified_damage = 1
+			
+			# Visual feedback that villain is blocking/adapting
+			if villain and villain.has_method("show_block_effect"):
+				villain.show_block_effect()
+			
+			# Reset pattern after a while so player isn't permanently punished
+			pattern_recognition_cooldown = pattern_memory_time
+		else:
+			# No pattern detected, normal damage
+			attack_pattern_detected = false
+	
+	# Return the potentially modified damage
+	return modified_damage
+
+# Detect if there's a repetitive pattern in player attacks
+func detect_repetitive_pattern():
+	# Need at least min_pattern_length attacks to detect a pattern
+	if attack_history.size() < min_pattern_length:
+		return false
+	
+	var last_attacks = []
+	for i in range(min(attack_history.size(), 5)):  # Check last 5 attacks max
+		last_attacks.append(attack_history[attack_history.size() - 1 - i]["type"])
+	
+	# Simple pattern: same attack repeated several times
+	var same_attack_count = 1
+	var last_type = last_attacks[0]
+	
+	for i in range(1, last_attacks.size()):
+		if last_attacks[i] == last_type:
+			same_attack_count += 1
+		else:
+			break
+	
+	# If player used same attack min_pattern_length times in a row
+	if same_attack_count >= min_pattern_length:
+		log_debug("Detected repetitive pattern: " + str(last_type) + " used " + 
+				str(same_attack_count) + " times in a row")
+		return true
+	
+	# Alternating pattern (e.g., A-B-A-B or A-B-C-A-B-C)
+	for pattern_size in range(2, min(4, last_attacks.size() / 2 + 1)):
+		var is_repeating = true
+		
+		for i in range(pattern_size):
+			# Check if pattern repeats
+			var j = 0
+			while i + j * pattern_size < last_attacks.size():
+				if j > 0 and last_attacks[i] != last_attacks[i + (j * pattern_size)]:
+					is_repeating = false
+					break
+				j += 1
+			
+			if not is_repeating:
+				break
+		
+		if is_repeating:
+			log_debug("Detected alternating pattern of size " + str(pattern_size))
+			return true
+	
+	return false
+
+func villain_took_damage(attack_type, base_damage):
+	# Process the attack through pattern recognition
+	var actual_damage = register_player_attack(attack_type, base_damage)
+	
+	# Return the potentially reduced damage
+	return actual_damage
