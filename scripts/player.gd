@@ -251,11 +251,33 @@ func take_damage(amount):
 	health -= amount
 	update_health_bar()  # Update the health bar in the HUD
 	
-	# Visual feedback of damage
-	if sprite:
-		sprite.modulate = Color(1.0, 0.3, 0.3)
-		await get_tree().create_timer(0.1).timeout
-		sprite.modulate = Color(1, 1, 1)
+	# Play take_damage animation if it exists, otherwise fallback to color change
+	if sprite and sprite.sprite_frames:
+		if sprite.sprite_frames.has_animation("take_damage"):
+			# Store current animation and progress to return to afterward
+			var current_anim = sprite.animation
+			var current_frame = sprite.frame
+			
+			# Play the take damage animation
+			sprite.play("take_damage")
+			print("▶️ Playing player take_damage animation")
+			
+			# Wait for animation to complete if it's not set to loop
+			if !sprite.sprite_frames.get_animation_loop("take_damage"):
+				await sprite.animation_finished
+			else:
+				# If it loops, just wait a short time
+				await get_tree().create_timer(0.3).timeout
+				
+			# Return to previous animation
+			sprite.play(current_anim)
+			sprite.frame = current_frame
+		else:
+			# Fallback to color flash if animation doesn't exist
+			print("⚠️ take_damage animation not found, using color flash instead")
+			sprite.modulate = Color(1.0, 0.3, 0.3)
+			await get_tree().create_timer(0.1).timeout
+			sprite.modulate = Color(1, 1, 1)
 
 	print("💔 Player took damage! HP:", health)
 

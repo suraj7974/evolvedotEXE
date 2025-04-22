@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://bt1gs6ao4pbrx"]
+[gd_scene load_steps=61 format=3 uid="uid://bt1gs6ao4pbrx"]
 
 [ext_resource type="Texture2D" uid="uid://djpldaajbm808" path="res://assets/sprites/Idle.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://bfevent0ya0ex" path="res://scripts/player.gd" id="1_g2els"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://bqbjafpta13tj" path="res://assets/sprites/Run.png" id="5_smehm"]
 [ext_resource type="Texture2D" uid="uid://bhmiei5o8jglv" path="res://assets/sprites/Jump.png" id="5_y4r1p"]
 [ext_resource type="Texture2D" uid="uid://blncle82vogdc" path="res://assets/sprites/Fireballs by Weentermakesgames/FireballPixelart/PixelartFireBall-1.png" id="6_f1ej7"]
+[ext_resource type="Texture2D" uid="uid://dhkbe1guxpxof" path="res://assets/sprites/Take Hit - white silhouette.png" id="9_oprun"]
 [ext_resource type="Script" uid="uid://ciyp0ft40ib6n" path="res://states/RunState.gd" id="9_ur7pv"]
 [ext_resource type="Script" uid="uid://b4xlvetlj2kmq" path="res://states/JumpState.gd" id="11_d2wvv"]
 [ext_resource type="Script" uid="uid://ccvwnt6p27rt0" path="res://states/DeadState.gd" id="13_jej6c"]
@@ -171,6 +172,22 @@ region = Rect2(400, 0, 200, 200)
 atlas = ExtResource("5_smehm")
 region = Rect2(200, 0, 200, 200)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_2dvfe"]
+atlas = ExtResource("9_oprun")
+region = Rect2(0, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lxlsd"]
+atlas = ExtResource("9_oprun")
+region = Rect2(200, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_giy8y"]
+atlas = ExtResource("9_oprun")
+region = Rect2(600, 0, 200, 200)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fdfoy"]
+atlas = ExtResource("9_oprun")
+region = Rect2(400, 0, 200, 200)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_d2wvv"]
 animations = [{
 "frames": [{
@@ -324,6 +341,23 @@ animations = [{
 "loop": true,
 "name": &"run",
 "speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2dvfe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lxlsd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_giy8y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fdfoy")
+}],
+"loop": true,
+"name": &"take_damage",
+"speed": 8.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d2wvv"]
@@ -336,9 +370,9 @@ sprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_d2wvv")
-animation = &"idle"
+animation = &"take_damage"
 autoplay = "idle"
-frame_progress = 0.88132
+frame_progress = 0.270128
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, -2)
