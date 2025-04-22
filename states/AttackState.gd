@@ -34,12 +34,25 @@ func enter(new_attack_type = "attack1"):
 			var villains = get_tree().get_nodes_in_group("villain")
 			for villain in villains:
 				var distance = player.global_position.distance_to(villain.global_position)
-				# Check if villain is within attack range and in front of player
-				var is_in_front = (villain.global_position.x > player.global_position.x and not player.sprite.flip_h) or \
-								  (villain.global_position.x < player.global_position.x and player.sprite.flip_h)
-				if distance < 50 and is_in_front:
-					print("⚔️ Player hit villain with " + attack_type + "!")
+				
+				# Check if villain is still alive
+				if villain.get("is_dead") and villain.is_dead:
+					print("⚠️ Villain is already dead, skipping attack")
+					continue
+					
+				# Improved hit detection with broader range and more reliable direction check
+				var is_in_front = false
+				if player.sprite.flip_h: # Player facing left
+					is_in_front = villain.global_position.x <= player.global_position.x
+				else: # Player facing right
+					is_in_front = villain.global_position.x >= player.global_position.x
+					
+				# Increased attack range for better detection and give benefit of the doubt to player
+				if distance < 70 and is_in_front:
+					print("⚔️ Player hit villain with " + attack_type + " at distance: " + str(distance))
 					if villain.has_method("take_damage"):
+						# Explicitly print attack hit
+						print("🎯 DIRECT HIT with " + attack_type + "! Dealing " + str(damage) + " damage")
 						# Pass the attack type to the villain's take_damage method for learning
 						villain.take_damage(damage, attack_type)
 		else:

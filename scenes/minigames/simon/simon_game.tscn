@@ -1,10 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://dyhva1retuwhm"]
+[gd_scene load_steps=15 format=3 uid="uid://dyhva1retuwhm"]
 
-[ext_resource type="Script" path="res://scripts/minigames/simon/simon_game.gd" id="1_mjux5"]
-[ext_resource type="Shader" path="res://scripts/minigames/simon/blur_shader.gdshader" id="2_n23vw"]
-[ext_resource type="FontFile" uid="uid://ct3vgbs47c1j0" path="res://assets/background/KiriFont.ttf" id="3_obvjf"]
-[ext_resource type="AudioStream" uid="uid://pt28jlj01lyq" path="res://assets/successed-295058.mp3" id="4_gs6oh"]
-[ext_resource type="AudioStream" uid="uid://crnvdbsy2jbpe" path="res://assets/wrong-47985.mp3" id="5_dt8vr"]
+[ext_resource type="Script" uid="uid://wa1thurbkk0g" path="res://scripts/minigames/simon/simon_game.gd" id="1_mjux5"]
+[ext_resource type="Shader" uid="uid://d116w7e4muc6r" path="res://scripts/minigames/simon/blur_shader.gdshader" id="2_n23vw"]
+[ext_resource type="FontFile" uid="uid://dc0q1314gh3ew" path="res://assets/background/KiriFont.ttf" id="3_obvjf"]
+[ext_resource type="AudioStream" uid="uid://drwxjjph71q3m" path="res://assets/successed-295058.mp3" id="4_gs6oh"]
+[ext_resource type="AudioStream" uid="uid://ra6dhnyupe1d" path="res://assets/wrong-47985.mp3" id="5_dt8vr"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0efv7"]
 shader = ExtResource("2_n23vw")
@@ -93,12 +93,12 @@ shadow_color = Color(0, 0, 0.0509804, 0.376471)
 shadow_size = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orange"]
-bg_color = Color(1, 0.5, 0.0, 0.8)
+bg_color = Color(1, 0.5, 0, 0.8)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.6, 0.3, 0.0, 1)
+border_color = Color(0.6, 0.3, 0, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -216,9 +216,9 @@ layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_obvjf")
 theme_override_font_sizes/font_size = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_red")
 theme_override_styles/hover = SubResource("StyleBoxFlat_red")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_red")
+theme_override_styles/normal = SubResource("StyleBoxFlat_red")
 
 [node name="Button2" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
 custom_minimum_size = Vector2(160, 110)
@@ -226,9 +226,9 @@ layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_obvjf")
 theme_override_font_sizes/font_size = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_green")
 theme_override_styles/hover = SubResource("StyleBoxFlat_green")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_green")
+theme_override_styles/normal = SubResource("StyleBoxFlat_green")
 
 [node name="Button3" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
 custom_minimum_size = Vector2(160, 110)
@@ -236,9 +236,9 @@ layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_obvjf")
 theme_override_font_sizes/font_size = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_blue")
 theme_override_styles/hover = SubResource("StyleBoxFlat_blue")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_blue")
+theme_override_styles/normal = SubResource("StyleBoxFlat_blue")
 
 [node name="Button4" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
 custom_minimum_size = Vector2(160, 110)
@@ -246,9 +246,9 @@ layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_obvjf")
 theme_override_font_sizes/font_size = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_yellow")
 theme_override_styles/hover = SubResource("StyleBoxFlat_yellow")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_yellow")
+theme_override_styles/normal = SubResource("StyleBoxFlat_yellow")
 
 [node name="Button5" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
 custom_minimum_size = Vector2(160, 110)
@@ -256,9 +256,9 @@ layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_obvjf")
 theme_override_font_sizes/font_size = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_orange")
 theme_override_styles/hover = SubResource("StyleBoxFlat_orange")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_orange")
+theme_override_styles/normal = SubResource("StyleBoxFlat_orange")
 
 [node name="Button6" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
 custom_minimum_size = Vector2(160, 110)
@@ -266,9 +266,9 @@ layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("3_obvjf")
 theme_override_font_sizes/font_size = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_purple")
 theme_override_styles/hover = SubResource("StyleBoxFlat_purple")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_purple")
+theme_override_styles/normal = SubResource("StyleBoxFlat_purple")
 
 [node name="MessageLabel" type="Label" parent="GameLayer/PopupContainer/GamePanel"]
 layout_mode = 1

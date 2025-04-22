@@ -54,13 +54,17 @@ func _ready():
 	# Immediately adjust position at startup
 	adjust_villain_position()
 	
+	# Fix player reference - explicitly look for player in the scene
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0:
 		player = players[0]
+		print("✅ Found player at position:", player.global_position)
 		if sprite:
 			sprite.flip_h = true
 	else:
 		print("❌ ERROR: No player found!")
+		# Try again in the next frame if player isn't available yet
+		call_deferred("_delayed_player_search")
 	
 	# Update health in the fighting game HUD
 	update_health_bar()
@@ -72,6 +76,16 @@ func _ready():
 			sprite.sprite_frames.set_animation_loop("dead", false)
 		if sprite.sprite_frames.has_animation("attack"):
 			sprite.sprite_frames.set_animation_loop("attack", false)
+
+# Try to find the player again after a delay
+func _delayed_player_search():
+	await get_tree().create_timer(0.2).timeout
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() > 0:
+		player = players[0]
+		print("✅ Found player in delayed search at position:", player.global_position)
+	else:
+		print("❌ ERROR: Still couldn't find player after delayed search!")
 
 func adjust_villain_position():
 	# Force villain to the ground
@@ -212,12 +226,17 @@ func take_damage(amount, attack_type: String = "attack1"):
 	# Calculate actual damage after applying learning-based resistance
 	var actual_damage = amount
 	if enable_learning and attack_learner:
+		# Make sure attack_learner is properly initialized
+		if attack_learner == null:
+			print("⚠️ WARNING: attack_learner was null, reinitializing")
+			attack_learner = AttackPatternLearner.new()
+		
 		# Register this attack for learning
 		attack_learner.register_attack(attack_type)
 		
 		# Apply resistance to reduce damage from repetitive attacks
 		var resistance = attack_learner.get_resistance(attack_type)
-		actual_damage = amount * (1.0 - resistance)
+		actual_damage = max(1.0, amount * (1.0 - resistance))  # Ensure at least 1 damage is always dealt
 		
 		# Show feedback when resistance is in effect
 		if resistance > 0.2:  # Only show if resistance is significant
@@ -229,7 +248,7 @@ func take_damage(amount, attack_type: String = "attack1"):
 				await get_tree().create_timer(0.1).timeout
 				sprite.modulate = Color(1, 1, 1)  # Reset to normal
 	
-	# Apply the (potentially reduced) damage
+	# Apply the (potentially reduced) damage - ensure it's at least 1
 	print("💥 Villain taking damage:", actual_damage, " (original: ", amount, ")")
 	health -= actual_damage
 	update_health_bar()  # Update the health bar in the HUD

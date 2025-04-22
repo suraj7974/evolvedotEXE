@@ -366,8 +366,11 @@ func revive_player(health_percentage = 1.0):
 	# Reset game_over flag first
 	game_over = false
 	
-	# Find player in the scene
+	# Find player and villain in the scene
 	find_game_entities()  # Make sure we have the most current reference
+	
+	# Reset positions for both player and villain - similar to game start
+	log_debug("Resetting positions for player and villain to default")
 	
 	# Check if player exists
 	if player:
@@ -375,6 +378,11 @@ func revive_player(health_percentage = 1.0):
 		
 		# Ensure player is visible and active
 		player.visible = true
+		
+		# Reset player position to default starting position (100, 300)
+		player.global_position = Vector2(100, 300)
+		player.velocity = Vector2.ZERO
+		log_debug("Reset player position to default starting position: " + str(player.global_position))
 		
 		# Reset player state if needed
 		if player.has_method("set_physics_process"):
@@ -429,21 +437,38 @@ func revive_player(health_percentage = 1.0):
 		if player.has_method("update_health_bar"):
 			player.update_health_bar()
 			log_debug("Updated player health bar")
-		
-		# Remove any game over overlay
-		var overlay = get_node_or_null("/root/GameOverlay")
-		if overlay:
-			overlay.visible = false
-		
-		# Show revival message
-		var revival_message = "You've been revived with " + str(int(health_percentage * 100)) + "% health!"
-		show_message("SECOND CHANCE!", revival_message, Color(0.2, 0.7, 0.3, 0.8))
-		
-		# Reset player position slightly to avoid any collision issues
-		player.global_position.y -= 5
-		log_debug("Adjusted player position to avoid collision issues")
 	else:
 		log_debug("ERROR: Failed to find player for revival!")
+	
+	# Also reset villain position and state
+	if villain:
+		log_debug("Resetting villain position and state")
+		
+		# Ensure villain is visible
+		villain.visible = true
+		
+		# Reset position to default (far right side)
+		villain.global_position = Vector2(400, 300)
+		villain.velocity = Vector2.ZERO
+		
+		# Make sure the villain's physics processing is enabled
+		villain.set_physics_process(true)
+		villain.set_process(true)
+		
+		# Return villain to idle state
+		if villain.state_machine:
+			if villain.state_machine.has_method("on_state_transition"):
+				villain.state_machine.on_state_transition("IdleState")
+				log_debug("Reset villain to IdleState")
+	
+	# Remove any game over overlay
+	var overlay = get_node_or_null("/root/GameOverlay")
+	if overlay:
+		overlay.visible = false
+	
+	# Show revival message
+	var revival_message = "You've been revived with " + str(int(health_percentage * 100)) + "% health!"
+	show_message("SECOND CHANCE!", revival_message, Color(0.2, 0.7, 0.3, 0.8))
 	
 	# Resume the game
 	get_tree().paused = false
