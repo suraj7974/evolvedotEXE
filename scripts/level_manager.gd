@@ -1,5 +1,7 @@
 extends Node
 
+signal game_completed(success)
+
 # Level settings
 var current_level = 1
 var max_level = 3
@@ -62,6 +64,17 @@ var player
 var villain
 var game_hud
 var log_file
+
+# Minigame variables
+var simon_game_scene = preload("res://scenes/minigames/simon/simon_game.tscn")
+var minigame_active = false
+
+# Track if a player has already used their second chance for each level
+var second_chance_used = {
+	1: false,
+	2: false,
+	3: false
+}
 
 func _ready():
 	# Reset level on new game
@@ -198,6 +211,9 @@ func advance_to_next_level():
 		var old_level = current_level
 		current_level += 1
 		
+		 # Reset second_chance_used for the new level
+		second_chance_used[current_level] = false
+		
 		# Show level transition - Call this in a delayed manner to ensure it works
 		call_deferred("show_level_transition", "LEVEL " + str(current_level))
 		
@@ -301,9 +317,128 @@ func show_level_transition(level_text):
 
 func player_died():
 	if not game_over and not level_transitioning:
-		game_over = true
-		log_debug("Player died! Game over.")
+		# Check if player has already used their second chance for this level
+		if second_chance_used[current_level]:
+			log_debug("Player died and has already used their second chance for level " + str(current_level) + ". Showing game over.")
+			game_over = true
+			show_game_over()
+		else:
+			log_debug("Player died! Initiating Simon Says minigame.")
+			game_over = true
+			spawn_simon_says_minigame()
+
+func spawn_simon_says_minigame():
+	if minigame_active:
+		log_debug("Minigame already active, ignoring spawn request.")
+		return
+	
+	minigame_active = true
+	var simon_game = simon_game_scene.instantiate()
+	get_tree().root.add_child(simon_game)
+	
+	# Connect using Godot 4's signal syntax
+	simon_game.game_completed.connect(_on_simon_game_completed)
+	log_debug("Simon Says minigame spawned.")
+
+func _on_simon_game_completed(success):
+	minigame_active = false
+	if success:
+		log_debug("Player succeeded in Simon Says minigame. Resuming game.")
+		game_over = false
+		# Mark that player has used their second chance for this level
+		second_chance_used[current_level] = true
+		revive_player(0.5)  # Revive the player with 50% health
+	else:
+		log_debug("Player failed Simon Says minigame. Showing game over.")
 		show_game_over()
+
+# Revive the player after successfully completing a minigame
+# health_percentage is a value between 0.0 and 1.0 (default: 1.0 for full health)
+func revive_player(health_percentage = 1.0):
+	# Reset game_over flag first
+	game_over = false
+	
+	# Find player in the scene
+	find_game_entities()  # Make sure we have the most current reference
+	
+	# Check if player exists
+	if player:
+		log_debug("Reviving player with " + str(health_percentage * 100) + "% health")
+		
+		# Ensure player is visible and active
+		player.visible = true
+		
+		# Reset player state if needed
+		if player.has_method("set_physics_process"):
+			player.set_physics_process(true)
+		if player.has_method("set_process"):
+			player.set_process(true)
+		
+		# Reset is_dead flag if it exists
+		if player.get("is_dead") != null:
+			player.is_dead = false
+			log_debug("Reset player's is_dead flag to false")
+		
+		# Enable collision if it was disabled
+		if player.has_node("CollisionShape2D"):
+			player.get_node("CollisionShape2D").disabled = false
+			log_debug("Re-enabled player's collision")
+			
+		# Reset player animation to idle state
+		# First try to use the state machine
+		if player.state_machine:
+			if player.state_machine.has_method("transition_to"):
+				player.state_machine.transition_to("IdleState")
+				log_debug("Reset player to IdleState via state machine transition_to")
+			elif player.state_machine.has_method("on_state_transition"):  
+				player.state_machine.on_state_transition("IdleState")
+				log_debug("Reset player to IdleState via state machine on_state_transition")
+			elif player.state_machine.has_method("change_state"):
+				player.state_machine.change_state("IdleState")
+				log_debug("Reset player to IdleState via state machine change_state")
+				
+		# If player has direct animation control
+		if player.has_node("AnimatedSprite2D"):
+			var anim_sprite = player.get_node("AnimatedSprite2D")
+			if anim_sprite.has_method("play"):
+				anim_sprite.play("idle")
+				log_debug("Reset player animation to idle via AnimatedSprite2D")
+		elif player.has_node("AnimationPlayer"):
+			var anim_player = player.get_node("AnimationPlayer")
+			if anim_player.has_method("play"):
+				anim_player.play("idle")
+				log_debug("Reset player animation to idle via AnimationPlayer")
+		
+		# Apply the health percentage based on max health from level data
+		var max_health = level_data[current_level]["player"]["health"]
+		var new_health = max_health * health_percentage
+		
+		# Set player health to the calculated value
+		player.health = new_health
+		log_debug("Set player health to " + str(new_health))
+		
+		# Update health bar
+		if player.has_method("update_health_bar"):
+			player.update_health_bar()
+			log_debug("Updated player health bar")
+		
+		# Remove any game over overlay
+		var overlay = get_node_or_null("/root/GameOverlay")
+		if overlay:
+			overlay.visible = false
+		
+		# Show revival message
+		var revival_message = "You've been revived with " + str(int(health_percentage * 100)) + "% health!"
+		show_message("SECOND CHANCE!", revival_message, Color(0.2, 0.7, 0.3, 0.8))
+		
+		# Reset player position slightly to avoid any collision issues
+		player.global_position.y -= 5
+		log_debug("Adjusted player position to avoid collision issues")
+	else:
+		log_debug("ERROR: Failed to find player for revival!")
+	
+	# Resume the game
+	get_tree().paused = false
 
 func villain_died():
 	if game_over or level_transitioning:
@@ -366,82 +501,126 @@ func reset_positions():
 			", Dead: " + str(villain.is_dead) +
 			", Visible: " + str(villain.visible))
 
-func show_message(title, message, color = Color(0.2, 0.2, 0.2, 0.9)):
+func show_message(title, message, color = Color(0.2, 0.2, 0.2, 0.9), duration = 3.0):
 	log_debug("Showing message: " + title + " - " + message)
 	
-	# Create message overlay if it doesn't exist yet
-	var overlay = get_node_or_null("/root/MessageOverlay")
-	if not overlay:
-		overlay = CanvasLayer.new()
-		overlay.name = "MessageOverlay"
-		overlay.layer = 100  # Ensure it's on top
-		get_tree().root.add_child(overlay)
+	# First, remove any existing MessageOverlay to avoid duplicate overlays
+	var existing = get_tree().root.get_node_or_null("MessageOverlay")
+	if existing:
+		existing.queue_free()
+		await get_tree().process_frame
+	
+	# Create message overlay
+	var overlay = CanvasLayer.new()
+	overlay.name = "MessageOverlay"
+	overlay.layer = 100  # Ensure it's on top
+	get_tree().root.add_child(overlay)
+	
+	var background = ColorRect.new()
+	background.name = "Background"
+	background.color = color
+	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(background)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "MessageContainer"
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	background.add_child(vbox)
+	
+	var title_label = Label.new()
+	title_label.name = "Title"
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var title_font_size = 48
+	title_label.add_theme_font_size_override("font_size", title_font_size)
+	vbox.add_child(title_label)
+	
+	var msg_label = Label.new()
+	msg_label.name = "Message"
+	msg_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var msg_font_size = 24
+	msg_label.add_theme_font_size_override("font_size", msg_font_size)
+	msg_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	vbox.add_child(msg_label)
+	
+	# Set the text content
+	title_label.text = title
+	msg_label.text = message
+	
+	# Add restart button for game over and victory states
+	if title == "GAME OVER" or title == "VICTORY":
+		var restart_container = CenterContainer.new()
+		restart_container.name = "RestartContainer"
+		restart_container.size_flags_vertical = Control.SIZE_SHRINK_END
+		restart_container.custom_minimum_size = Vector2(0, 150) # Provide space below the message
+		vbox.add_child(restart_container)
 		
-		var background = ColorRect.new()
-		background.name = "Background"
-		background.color = color
-		background.set_anchors_preset(Control.PRESET_FULL_RECT)
-		overlay.add_child(background)
+		var button = Button.new()
+		button.name = "RestartButton"
+		button.text = "Restart Game"
+		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		button.custom_minimum_size = Vector2(200, 50)
+		button.add_theme_font_size_override("font_size", 24)
+		button.add_theme_color_override("font_color", Color(1, 1, 1))
+		button.pressed.connect(_on_restart_button_pressed)
+		restart_container.add_child(button)
 		
-		var vbox = VBoxContainer.new()
-		vbox.name = "MessageContainer"
-		vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-		background.add_child(vbox)
-		
-		var title_label = Label.new()
-		title_label.name = "Title"
-		title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var title_font_size = 48
-		title_label.add_theme_font_size_override("font_size", title_font_size)
-		vbox.add_child(title_label)
-		
-		var msg_label = Label.new()
-		msg_label.name = "Message"
-		msg_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var msg_font_size = 24
-		msg_label.add_theme_font_size_override("font_size", msg_font_size)
-		msg_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-		vbox.add_child(msg_label)
-		
-		if title == "GAME OVER" or title == "VICTORY":
-			var button = Button.new()
-			button.name = "RestartButton"
-			button.text = "Restart Game"
-			button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-			button.custom_minimum_size = Vector2(200, 50)
-			button.pressed.connect(_on_restart_button_pressed)
-			vbox.add_child(button)
-	else:
-		# Update existing overlay
-		var title_label = overlay.get_node("Background/MessageContainer/Title")
-		var msg_label = overlay.get_node("Background/MessageContainer/Message")
-		
-		# Make sure overlay is set visible before setting text
-		overlay.visible = true
-		
-		overlay.get_node("Background").color = color
-		
-		if title_label:
-			title_label.text = title
-		if msg_label:
-			msg_label.text = message
+		log_debug("Added restart button to game over/victory screen")
 	
 	# Make overlay visible and ensure it's above other UI
 	overlay.visible = true
-	overlay.layer = 100
 	
 	# If it's a temporary message (like level transition)
 	if title != "GAME OVER" and title != "VICTORY":
-		# Wait longer for level transitions to be more noticeable
-		await get_tree().create_timer(3.0).timeout
+		# Wait for the specified duration then hide
+		await get_tree().create_timer(duration).timeout
 		
 		# Make sure we're still in the tree before trying to hide
 		if is_instance_valid(overlay) and overlay.is_inside_tree():
 			overlay.visible = false
+			overlay.queue_free()
+			log_debug("Temporary message removed after " + str(duration) + " seconds")
 
 func _on_restart_button_pressed():
-	get_tree().reload_current_scene()
+	log_debug("Restart button pressed, reloading game from beginning")
+	
+	# First, clean up any existing overlays
+	var overlay = get_tree().root.get_node_or_null("MessageOverlay")
+	if overlay:
+		overlay.queue_free()
+		
+	# Remove any game over overlay
+	var game_overlay = get_tree().root.get_node_or_null("GameOverlay")
+	if game_overlay:
+		game_overlay.queue_free()
+	
+	# Reset game state
+	current_level = 1
+	game_over = false
+	level_transitioning = false
+	
+	# Reset second chances
+	for level in second_chance_used:
+		second_chance_used[level] = false
+		
+	log_debug("All game state reset, loading fresh game scene")
+	
+	# Use call_deferred to ensure the scene change happens after this function completes
+	call_deferred("_delayed_scene_change")
+
+func _delayed_scene_change():
+	# Reload the main scene to start fresh
+	var error = get_tree().change_scene_to_file("res://scenes/game.tscn")
+	if error != OK:
+		log_debug("ERROR: Failed to change scene! Error code: " + str(error))
+
+func show_game_over():
+	show_message("GAME OVER", "You were defeated! Try again.", Color(0.5, 0.0, 0.0, 0.9))
+	log_debug("Game over message shown with restart button")
+	
+func show_game_win():
+	show_message("VICTORY", "Congratulations! You've defeated all enemies!", Color(0.0, 0.5, 0.0, 0.9))
+	log_debug("Victory message shown with restart button")
 
 func show_level_message(level_text):
 	# Use brighter blue color for better visibility
@@ -458,9 +637,3 @@ func show_level_message(level_text):
 		
 	show_message(level_text, message, level_color)
 	log_debug("Level transition message displayed: " + level_text + " - " + message)
-
-func show_game_over():
-	show_message("GAME OVER", "You were defeated! Try again.", Color(0.5, 0.0, 0.0, 0.9))
-	
-func show_game_win():
-	show_message("VICTORY", "Congratulations! You've defeated all enemies!", Color(0.0, 0.5, 0.0, 0.9))

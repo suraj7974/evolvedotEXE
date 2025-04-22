@@ -1,0 +1,178 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/minigames/simon_says_game.gd" id="1_me8ye"]
+[ext_resource type="AudioStream" path="res://assets/successed-295058.mp3" id="2_lrvfa"]
+[ext_resource type="AudioStream" path="res://assets/wrong-47985.mp3" id="3_n7nn5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8g71"]
+bg_color = Color(0.129412, 0.129412, 0.129412, 0.901961)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.603922, 0.603922, 0.603922, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+shadow_size = 5
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xhrty"]
+bg_color = Color(0.882353, 0.203922, 0.203922, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_52fu7"]
+bg_color = Color(0.203922, 0.396078, 0.882353, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r1m0q"]
+bg_color = Color(0.262745, 0.772549, 0.286275, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a8k3u"]
+bg_color = Color(0.909804, 0.784314, 0.184314, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_ydv4g"]
+
+[node name="SimonSaysGame" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_me8ye")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -225.0
+offset_right = 200.0
+offset_bottom = 225.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_j8g71")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Title" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SIMON SAYS"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Remember and repeat the sequence to survive!"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="LevelLabel" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Level: 1"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Get Ready!"
+horizontal_alignment = 1
+
+[node name="GameArea" type="GridContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="RedButton" type="Button" parent="PanelContainer/VBoxContainer/GameArea"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_xhrty")
+theme_override_styles/hover = SubResource("StyleBoxFlat_xhrty")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_xhrty")
+
+[node name="BlueButton" type="Button" parent="PanelContainer/VBoxContainer/GameArea"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_52fu7")
+theme_override_styles/hover = SubResource("StyleBoxFlat_52fu7")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_52fu7")
+
+[node name="GreenButton" type="Button" parent="PanelContainer/VBoxContainer/GameArea"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_r1m0q")
+theme_override_styles/hover = SubResource("StyleBoxFlat_r1m0q")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_r1m0q")
+
+[node name="YellowButton" type="Button" parent="PanelContainer/VBoxContainer/GameArea"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_a8k3u")
+theme_override_styles/hover = SubResource("StyleBoxFlat_a8k3u")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_a8k3u")
+
+[node name="SequenceTimer" type="Timer" parent="."]
+wait_time = 1.5
+one_shot = true
+
+[node name="ButtonFlashTimer" type="Timer" parent="."]
+wait_time = 0.7
+
+[node name="SuccessSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_lrvfa")
+
+[node name="ErrorSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_n7nn5")
+
+[node name="ToneC" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_ydv4g")
+pitch_scale = 0.7
+
+[node name="ToneD" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_ydv4g")
+pitch_scale = 0.8
+
+[node name="ToneE" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_ydv4g")
+pitch_scale = 0.9
+
+[node name="ToneG" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamGenerator_ydv4g")
+pitch_scale = 1.0
+
+[connection signal="timeout" from="SequenceTimer" to="." method="_on_sequence_timer_timeout"]
+[connection signal="timeout" from="ButtonFlashTimer" to="." method="_on_button_flash_timer_timeout"]

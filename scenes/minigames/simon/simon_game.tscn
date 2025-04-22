@@ -1,0 +1,313 @@
+[gd_scene load_steps=16 format=3 uid="uid://dyhva1retuwhm"]
+
+[ext_resource type="Script" path="res://scripts/minigames/simon/simon_game.gd" id="1_mjux5"]
+[ext_resource type="Shader" path="res://scripts/minigames/simon/blur_shader.gdshader" id="2_n23vw"]
+[ext_resource type="FontFile" uid="uid://ct3vgbs47c1j0" path="res://assets/background/KiriFont.ttf" id="3_obvjf"]
+[ext_resource type="AudioStream" uid="uid://pt28jlj01lyq" path="res://assets/successed-295058.mp3" id="4_gs6oh"]
+[ext_resource type="AudioStream" uid="uid://crnvdbsy2jbpe" path="res://assets/wrong-47985.mp3" id="5_dt8vr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0efv7"]
+shader = ExtResource("2_n23vw")
+shader_parameter/blur_amount = 0.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_andml"]
+bg_color = Color(0.133333, 0.172549, 0.262745, 0.92549)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.294118, 0.521569, 0.831373, 0.647059)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.439216)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x63a8"]
+bg_color = Color(0.0901961, 0.117647, 0.184314, 0.941176)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.294118, 0.486275, 0.713726, 0.313726)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_red"]
+bg_color = Color(1, 0.2, 0.2, 0.8)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.6, 0.1, 0.1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0.0509804, 0.376471)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_green"]
+bg_color = Color(0.2, 1, 0.2, 0.8)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.1, 0.6, 0.1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0.0509804, 0.376471)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_blue"]
+bg_color = Color(0.2, 0.2, 1, 0.8)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.1, 0.1, 0.6, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0.0509804, 0.376471)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yellow"]
+bg_color = Color(1, 1, 0.2, 0.8)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.6, 0.6, 0.1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0.0509804, 0.376471)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orange"]
+bg_color = Color(1, 0.5, 0.0, 0.8)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.6, 0.3, 0.0, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0.0509804, 0.376471)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_purple"]
+bg_color = Color(0.8, 0.2, 0.8, 0.8)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.5, 0.1, 0.5, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0.0509804, 0.376471)
+shadow_size = 4
+
+[node name="SimonGame" type="Node"]
+process_mode = 3
+script = ExtResource("1_mjux5")
+
+[node name="GameLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="BlurBackground" type="ColorRect" parent="GameLayer"]
+material = SubResource("ShaderMaterial_0efv7")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PopupContainer" type="CenterContainer" parent="GameLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(576, 324)
+
+[node name="GamePanel" type="Panel" parent="GameLayer/PopupContainer"]
+custom_minimum_size = Vector2(600, 500)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_andml")
+
+[node name="Title" type="Label" parent="GameLayer/PopupContainer/GamePanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 20.0
+offset_right = 300.0
+offset_bottom = 71.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 36
+text = "MEMORY CHALLENGE"
+horizontal_alignment = 1
+
+[node name="RoundLabel" type="Label" parent="GameLayer/PopupContainer/GamePanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 70.0
+offset_right = 300.0
+offset_bottom = 103.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 22
+text = "Round: 1/5"
+horizontal_alignment = 1
+
+[node name="ButtonsBackground" type="Panel" parent="GameLayer/PopupContainer/GamePanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -150.0
+offset_right = 220.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_x63a8")
+
+[node name="Buttons" type="GridContainer" parent="GameLayer/PopupContainer/GamePanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = -100.0
+offset_right = 170.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+columns = 2
+
+[node name="Button1" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
+custom_minimum_size = Vector2(160, 110)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_red")
+theme_override_styles/hover = SubResource("StyleBoxFlat_red")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_red")
+
+[node name="Button2" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
+custom_minimum_size = Vector2(160, 110)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_green")
+theme_override_styles/hover = SubResource("StyleBoxFlat_green")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_green")
+
+[node name="Button3" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
+custom_minimum_size = Vector2(160, 110)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_blue")
+theme_override_styles/hover = SubResource("StyleBoxFlat_blue")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_blue")
+
+[node name="Button4" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
+custom_minimum_size = Vector2(160, 110)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_yellow")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yellow")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_yellow")
+
+[node name="Button5" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
+custom_minimum_size = Vector2(160, 110)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_orange")
+theme_override_styles/hover = SubResource("StyleBoxFlat_orange")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_orange")
+
+[node name="Button6" type="Button" parent="GameLayer/PopupContainer/GamePanel/Buttons"]
+custom_minimum_size = Vector2(160, 110)
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_purple")
+theme_override_styles/hover = SubResource("StyleBoxFlat_purple")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_purple")
+
+[node name="MessageLabel" type="Label" parent="GameLayer/PopupContainer/GamePanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -275.0
+offset_top = -90.0
+offset_right = 275.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("3_obvjf")
+theme_override_font_sizes/font_size = 24
+text = "Remember the pattern!"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="SoundEffects" type="Node" parent="."]
+
+[node name="ButtonSound" type="AudioStreamPlayer" parent="SoundEffects"]
+stream = ExtResource("4_gs6oh")
+volume_db = -10.0
+
+[node name="SuccessSound" type="AudioStreamPlayer" parent="SoundEffects"]
+stream = ExtResource("4_gs6oh")
+volume_db = -6.0
+
+[node name="FailSound" type="AudioStreamPlayer" parent="SoundEffects"]
+stream = ExtResource("5_dt8vr")
+volume_db = -6.0
+
+[node name="WinSound" type="AudioStreamPlayer" parent="SoundEffects"]
+stream = ExtResource("4_gs6oh")
+volume_db = -3.0
+
+[node name="LoseSound" type="AudioStreamPlayer" parent="SoundEffects"]
+stream = ExtResource("5_dt8vr")
+volume_db = -3.0
