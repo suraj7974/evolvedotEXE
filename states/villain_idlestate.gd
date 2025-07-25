@@ -5,6 +5,11 @@ var time_since_check = 0
 
 func enter():
 	print("🛑 Villain Entered Idle State")
+	
+	# Notify villain of state change for sound system
+	if villain and villain.has_method("on_state_changed"):
+		villain.on_state_changed("IdleState")
+	
 	if villain and villain.sprite:
 		villain.sprite.play("idle")
 		
@@ -34,6 +39,9 @@ func _process(delta):
 			if distance < villain.detection_range * 0.8:
 				print("👀 Player detected at distance: ", distance)
 				print("🔄 Transitioning from Idle to Chase state")
+				# Notify villain of state change for sound trigger
+				if villain.has_method("on_state_changed"):
+					villain.on_state_changed("ChaseState")
 				transitioned.emit("ChaseState")
 
 func _physics_process(delta):

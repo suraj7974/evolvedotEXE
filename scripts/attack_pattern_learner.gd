@@ -27,6 +27,7 @@ func register_attack(attack_type: String) -> void:
 	print("🧠 Learning: Registering attack type: " + attack_type)
 	
 	# Add this attack to recent attacks
+	
 	recent_attacks.append(attack_type)
 	
 	# Keep only the most recent attacks

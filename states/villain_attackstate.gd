@@ -18,6 +18,11 @@ func enter():
 		return
 		
 	print("🗡️ Villain entered Attack State")
+	
+	# Notify villain of state change for sound system
+	if villain and villain.has_method("on_state_changed"):
+		villain.on_state_changed("AttackState")
+		
 	has_dealt_damage = false  # Reset damage flag for new attack
 	is_attacking = true  # Set attacking flag
 	
@@ -58,6 +63,9 @@ func enter():
 				villain.can_attack = false
 				
 			is_attacking = false  # Reset attacking flag before transition
+			# Notify villain of state change
+			if villain.has_method("on_state_changed"):
+				villain.on_state_changed("ChaseState")
 			transitioned.emit("ChaseState")
 	else:
 		is_attacking = false  # Reset flag if attack couldn't be performed

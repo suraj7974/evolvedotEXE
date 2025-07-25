@@ -12,6 +12,11 @@ func enter():
 		return
 
 	print("🚨 Villain Entered Chase State")
+	
+	# Notify villain of state change for sound trigger
+	if villain and villain.has_method("on_state_changed"):
+		villain.on_state_changed("ChaseState")
+		
 	transitioning_to_attack = false  # Reset transition flag
 	if villain and villain.sprite:
 		villain.sprite.play("run")
@@ -38,6 +43,9 @@ func _physics_process(delta):
 		# Check if player is too far away
 		if distance > villain.chase_persistence_range:
 			print("🛑 Player is too far! Returning to IdleState.")
+			# Notify villain of state change
+			if villain.has_method("on_state_changed"):
+				villain.on_state_changed("IdleState")
 			transitioned.emit("IdleState")
 			return
 		
@@ -49,6 +57,9 @@ func _physics_process(delta):
 			transitioning_to_attack = true
 			# Ensure villain's internal cooldown is also synchronized
 			villain.can_attack = false
+			# Notify villain of state change
+			if villain.has_method("on_state_changed"):
+				villain.on_state_changed("AttackState")
 			# Don't damage here, only transition to attack state
 			transitioned.emit("AttackState")
 			return

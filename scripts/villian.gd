@@ -21,6 +21,11 @@ var is_dead = false
 var chase_persistence_range = 200.0
 var villain_name = "VILLAIN"  # Name to display on the UI
 
+# Sound system for approach
+var approach_sound: AudioStreamPlayer2D
+var has_played_approach_sound = false  # Track if sound was played this approach cycle
+var current_state_name = "IdleState"  # Track current state for sound triggers
+
 # For AttackPatternLearner
 var attack_learner: AttackPatternLearner  # Reference to our reinforcement learning system
 
@@ -68,6 +73,9 @@ func _ready():
 	
 	# Update health in the fighting game HUD
 	update_health_bar()
+	
+	# Setup approach sound
+	setup_approach_sound()
 	
 	# Setup state machine and animations
 	state_machine = $StateMachine
@@ -177,6 +185,51 @@ func is_player_too_far() -> bool:
 		var distance = global_position.distance_to(player.global_position)
 		return distance > chase_persistence_range
 	return true
+
+# Setup the approach sound system
+func setup_approach_sound():
+	# Create AudioStreamPlayer2D for approach sound
+	approach_sound = AudioStreamPlayer2D.new()
+	add_child(approach_sound)
+	
+	# Load the sound file from assets/sounds
+	var sound_path = "res://assets/sounds/WhatsApp Audio 2025-07-25 at 9.27.04 PM.mp3"
+	var audio_stream = load(sound_path)
+	
+	if audio_stream:
+		approach_sound.stream = audio_stream
+		approach_sound.volume_db = -5.0  # Adjust volume as needed
+		approach_sound.max_distance = 300.0  # Sound audible range
+		print("🔊 Approach sound loaded successfully")
+	else:
+		print("❌ Failed to load approach sound from: " + sound_path)
+
+# Called when villain state changes - trigger sound logic
+func on_state_changed(new_state_name: String):
+	var previous_state = current_state_name
+	current_state_name = new_state_name
+	
+	print("🎭 State change: " + previous_state + " → " + new_state_name)
+	
+	# Play approach sound when transitioning from idle to chase/attack
+	if previous_state == "IdleState" and (new_state_name == "ChaseState" or new_state_name == "AttackState"):
+		if not has_played_approach_sound:
+			play_approach_sound()
+			has_played_approach_sound = true
+			print("🔊 Approach sound triggered: " + previous_state + " → " + new_state_name)
+	
+	# Reset sound flag when returning to idle (allows sound to play again next approach)
+	elif new_state_name == "IdleState":
+		has_played_approach_sound = false
+		print("🔄 Sound flag reset - ready for next approach")
+
+# Play the approach sound
+func play_approach_sound():
+	if approach_sound and approach_sound.stream:
+		approach_sound.play()
+		print("🔊 Playing villain approach sound")
+	else:
+		print("❌ Cannot play approach sound - AudioStreamPlayer2D not ready")
 
 func _physics_process(delta):
 	# Skip all processing if villain is dead
