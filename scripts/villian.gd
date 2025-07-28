@@ -193,7 +193,7 @@ func setup_approach_sound():
 	add_child(approach_sound)
 	
 	# Load the sound file from assets/sounds
-	var sound_path = "res://assets/sounds/WhatsApp Audio 2025-07-25 at 9.27.04 PM.mp3"
+	var sound_path = "res://assets/sounds/police_aa_gyi_police.mp3"
 	var audio_stream = load(sound_path)
 	
 	if audio_stream:

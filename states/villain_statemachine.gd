@@ -46,6 +46,10 @@ func on_state_transition(new_state_name):
 			current_state.exit()
 		current_state = states[new_state_name]
 		current_state.enter()
+		
+		# Trigger sound logic in villain script
+		if villain and villain.has_method("on_state_changed"):
+			villain.on_state_changed(new_state_name)
 	else:
 		print("❌ ERROR: Invalid state transition:", new_state_name)
 		print("❌ Available states:", states.keys())

@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=3 uid="uid://6ain6tj41v3n"]
+
+[ext_resource type="Script" uid="uid://ccudv78pbpkjl" path="res://scripts/mobile_controls.gd" id="1"]
+
+[node name="MobileControls" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftButton" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 522.0
+offset_right = 127.0
+offset_bottom = 622.0
+text = "◀"
+
+[node name="RightButton" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 520.0
+offset_right = 250.0
+offset_bottom = 620.0
+text = "▶"
+
+[node name="JumpButton" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 956.0
+offset_top = 396.0
+offset_right = 1056.0
+offset_bottom = 496.0
+text = "⬆"
+
+[node name="AttackButton" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 889.0
+offset_top = 513.0
+offset_right = 989.0
+offset_bottom = 613.0
+text = "⚔"
+
+[node name="Attack2Button" type="Button" parent="Control"]
+layout_mode = 0
+offset_left = 1020.0
+offset_top = 513.0
+offset_right = 1120.0
+offset_bottom = 613.0
+text = "⭐"

@@ -20,6 +20,22 @@ func _ready():
 	# Create or access the shared HUD
 	setup_game_hud()
 	
+	# Instance mobile controls for touch devices
+	var mobile_controls_scene = preload("res://scenes/MobileControls.tscn")
+	var mobile_controls = mobile_controls_scene.instantiate()
+	get_tree().root.add_child(mobile_controls)
+	mobile_controls.connect("move_left_start", Callable(self, "_on_mobile_move_left_start"))
+	mobile_controls.connect("move_left_stop", Callable(self, "_on_mobile_move_left_stop"))
+	mobile_controls.connect("move_right_start", Callable(self, "_on_mobile_move_right_start"))
+	mobile_controls.connect("move_right_stop", Callable(self, "_on_mobile_move_right_stop"))
+	mobile_controls.connect("jump_start", Callable(self, "_on_mobile_jump_start"))
+	mobile_controls.connect("jump_stop", Callable(self, "_on_mobile_jump_stop"))
+	mobile_controls.connect("attack_start", Callable(self, "_on_mobile_attack_start"))
+	mobile_controls.connect("attack_stop", Callable(self, "_on_mobile_attack_stop"))
+	mobile_controls.connect("attack2_start", Callable(self, "_on_mobile_attack2_start"))
+	mobile_controls.connect("attack2_stop", Callable(self, "_on_mobile_attack2_stop"))
+	print("🎮 Mobile controls instantiated and connected!")
+	
 	print("Player Y:", global_position.y)
 	if state_machine:
 		print("✅ State Machine Loaded Successfully!")
@@ -247,6 +263,68 @@ func update_health_bar():
 						else:
 							health_fill.color = Color(0.1, 0.8, 0.3, 1.0)  # Green when high
 
+# Mobile controls handlers
+var mobile_left_pressed = false
+var mobile_right_pressed = false
+var mobile_jump_pressed = false
+var mobile_attack_pressed = false
+var mobile_attack2_pressed = false
+
+func _on_mobile_move_left_start():
+	print("✅ Player received: Left start")
+	mobile_left_pressed = true
+
+func _on_mobile_move_left_stop():
+	print("✅ Player received: Left stop")
+	mobile_left_pressed = false
+
+func _on_mobile_move_right_start():
+	print("✅ Player received: Right start")
+	mobile_right_pressed = true
+
+func _on_mobile_move_right_stop():
+	print("✅ Player received: Right stop")
+	mobile_right_pressed = false
+
+func _on_mobile_jump_start():
+	print("✅ Player received: Jump start")
+	mobile_jump_pressed = true
+	# Trigger jump if on floor (immediate response)
+	if is_on_floor():
+		velocity.y = JUMP_VELOCITY
+	else:
+		print("⚠️ Can't jump - not on floor")
+
+func _on_mobile_jump_stop():
+	print("✅ Player received: Jump stop")
+	mobile_jump_pressed = false
+
+func _on_mobile_attack_start():
+	print("✅ Player received: Attack start")
+	mobile_attack_pressed = true
+	# Trigger attack through state machine (immediate response)
+	if state_machine:
+		state_machine.transition_to("AttackState", "attack1")
+	else:
+		print("⚠️ No state machine found")
+
+func _on_mobile_attack_stop():
+	print("✅ Player received: Attack stop")
+	mobile_attack_pressed = false
+
+func _on_mobile_attack2_start():
+	print("✅ Player received: Attack2 start")
+	mobile_attack2_pressed = true
+	# Trigger second attack through state machine with different attack type (immediate response)
+	if state_machine:
+		state_machine.transition_to("AttackState", "attack2")  # Different attack pattern
+	else:
+		print("⚠️ No state machine found")
+
+func _on_mobile_attack2_stop():
+	print("✅ Player received: Attack2 stop")
+	mobile_attack2_pressed = false
+
 func take_damage(amount):
 	health -= amount
 	update_health_bar()  # Update the health bar in the HUD
@@ -318,33 +396,28 @@ func setup_camera():
 	
 	print("✅ Camera setup complete")
 
-func _physics_process(delta: float):
+func _physics_process(delta: float):	
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 
-	# Handle movement
-	var direction = 0
-	if Input.is_action_pressed("move_left"):
-		direction = -1
-	elif Input.is_action_pressed("move_right"):
-		direction = 1
+	# Handle jump (keyboard + mobile - mobile jump is handled in _on_mobile_jump)
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
 
-	# Move the player
-	velocity.x = direction * SPEED
+	# Handle attack (keyboard + mobile - mobile attack is handled in _on_mobile_attack)
+	if Input.is_action_just_pressed("attack"):
+		if state_machine:
+			state_machine.transition_to("AttackState", "attack1")
 
-	# Flip the sprite to face movement direction
-	if direction != 0:
-		sprite.flip_h = (direction == -1)  # Face left if moving left
-		
-		# Optional: Slight camera offset in movement direction
-		var camera = get_node_or_null("Camera2D")
-		if camera:
-			camera.offset.x = lerp(camera.offset.x, direction * 50.0, delta * 2.0)
+	# Let the state machine handle movement and animations
+	# The states (IdleState, RunState) will check mobile_left_pressed and mobile_right_pressed
+	# and handle sprite flipping and velocity
 
+	# Apply movement before state machine update
+	move_and_slide()
+	
 	if state_machine:
 		state_machine.update(delta)
-
-	move_and_slide()
 
 func play_animation(anim_name: String):
 	if sprite and sprite.sprite_frames:
